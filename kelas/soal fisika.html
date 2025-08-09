@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soal Harian Fisika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #38b2ac;
+            --secondary: #0e7490;
+            --accent: #f59e0b;
+            --correct: #10b981;
+            --wrong: #ef4444;
+        }
+        
+        body {
+            font-family: 'Baloo 2', cursive;
+            background-color: #f8fafc;
+        }
+        
+        .app-container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 414px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            background: white;
+            z-index: 10;
+        }
+        
+        .nav-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-icon.active {
+            transform: translateY(-10px);
+            color: var(--primary);
+        }
+        
+        .quiz-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .quiz-card.correct {
+            border-left-color: var(--correct);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+        
+        .quiz-card.wrong {
+            border-left-color: var(--wrong);
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+        
+        .option {
+            transition: all 0.2s ease;
+        }
+        
+        .option:hover {
+            transform: translateX(5px);
+        }
+        
+        .option.correct-answer {
+            background-color: var(--correct) !important;
+            color: white !important;
+        }
+        
+        .option.wrong-answer {
+            background-color: var(--wrong) !important;
+            color: white !important;
+        }
+        
+        .progress-ring {
+            transition: stroke-dashoffset 0.5s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f59e0b;
+            opacity: 0;
+        }
+
+        /* Perbaikan untuk tombol navigasi */
+        .nav-buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding: 0 1rem;
+            width: 100%;
+        }
+
+        .nav-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-button-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .nav-button-secondary {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .nav-button-hidden {
+            visibility: hidden;
+        }
+
+        /* New styles for improved progress section */
+        .progress-container {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 100%);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-title {
+            font-weight: 700;
+            color: #0f766e;
+            font-size: 16px;
+        }
+
+        .progress-count {
+            background-color: #ccfbf1;
+            color: #0d9488;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .progress-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-circle {
+            position: relative;
+            width: 72px;
+            height: 72px;
+            flex-shrink: 0;
+        }
+
+        .progress-info {
+            flex-grow: 1;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2dd4bf 0%, #0d9488 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-reward {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .reward-label {
+            color: #64748b;
+        }
+
+        .reward-badge {
+            background-color: #fef3c7;
+            color: #d97706;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .reward-icon {
+            color: #f59e0b;
+        }
+
+        .progress-trophy {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #f59e0b;
+            font-size: 24px;
+        }
+
+        .streak-count {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #dc2626;
+            font-weight: 600;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .streak-icon {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile App Container -->
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="bg-gradient-to-r from-primary to-secondary p-4 text-white">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="bg-white text-primary p-2 rounded-lg mr-3">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h1 class="font-bold text-lg">Soal Fisika</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-history"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content Area -->
+        <main class="pb-20">
+            <!-- Improved Quiz Progress Section -->
+            <section class="p-4">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-title">Progress Harian</span>
+                        <span class="progress-count">
+                            <span id="current-question">1</span>/<span id="total-questions">5</span>
+                        </span>
+                    </div>
+                    
+                    <div class="progress-content">
+                        <div class="progress-circle">
+                            <svg class="w-full h-full" viewBox="0 0 36 36">
+                                <path
+                                    d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none"
+                                    stroke="#e2e8f0"
+                                    stroke-width="3"
+                                />
+                                <path
+                                    id="progress-ring"
+                                    d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none"
+                                    stroke="#0d9488"
+                                    stroke-width="3"
+                                    stroke-dasharray="100, 100"
+                                    stroke-dashoffset="80"
+                                    stroke-linecap="round"
+                                />
+                            </svg>
+                            <div class="progress-trophy">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-info">
+                            <div class="progress-stats">
+                                <span>Skor Hari Ini</span>
+                                <span id="current-score">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="score-progress" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            
+                            <div class="streak-count">
+                                <i class="fas fa-fire streak-icon"></i>
+                                <span id="streak-days">3 hari beruntun</span>
+                            </div>
+                            
+                            <div class="progress-reward">
+                                <span class="reward-label">Hadiah</span>
+                                <span class="reward-badge">
+                                    <i class="fas fa-gem reward-icon"></i>
+                                    <span id="reward-badge">Kunci</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Quiz Container -->
+            <section class="px-4">
+                <div id="quiz-container">
+                   <!-- Soal Kuantum 1 -->
+					<div class="quiz-card bg-white rounded-xl shadow-md p-4 mb-4 hidden">
+						<div class="flex items-center mb-3">
+							<div class="bg-primary/10 text-primary p-2 rounded-lg mr-3">
+								<i class="fas fa-question"></i>
+							</div>
+							<h3 class="font-bold text-gray-800">Apa yang dimaksud dengan fungsi gelombang dalam mekanika kuantum?</h3>
+						</div>
+						
+						<div class="space-y-2">
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								A. Gelombang elektromagnetik yang merambat di ruang hampa
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								B. Fungsi matematika yang menggambarkan gelombang air
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="true">
+								C. Fungsi matematika yang mengandung semua informasi tentang sistem kuantum
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								D. Fungsi yang menggambarkan gerak partikel klasik
+							</div>
+						</div>
+						
+						<div class="mt-3 hidden" id="explanation-1">
+							<div class="bg-green-50 text-green-800 p-3 rounded-lg text-sm">
+								<i class="fas fa-check-circle mr-1"></i> <strong>Jawaban benar:</strong> Fungsi gelombang (\(\psi\)) dalam mekanika kuantum adalah fungsi matematika kompleks yang mengandung semua informasi yang dapat diketahui tentang keadaan suatu sistem kuantum.
+							</div>
+						</div>
+					</div>
+
+					<!-- Soal Kuantum 2 -->
+					<div class="quiz-card bg-white rounded-xl shadow-md p-4 mb-4 hidden">
+						<div class="flex items-center mb-3">
+							<div class="bg-primary/10 text-primary p-2 rounded-lg mr-3">
+								<i class="fas fa-question"></i>
+							</div>
+							<h3 class="font-bold text-gray-800">Apa prinsip ketidakpastian Heisenberg?</h3>
+						</div>
+						
+						<div class="space-y-2">
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								A. Energi dan waktu tidak dapat diukur secara bersamaan
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								B. Momentum dan posisi dapat diketahui secara pasti
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="true">
+								C. Tidak mungkin mengetahui secara bersamaan posisi dan momentum partikel dengan akurasi tak terbatas
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								D. Kecepatan cahaya adalah konstan di semua kerangka acuan
+							</div>
+						</div>
+						
+						<div class="mt-3 hidden" id="explanation-2">
+							<div class="bg-green-50 text-green-800 p-3 rounded-lg text-sm">
+								<i class="fas fa-check-circle mr-1"></i> <strong>Jawaban benar:</strong> Prinsip ketidakpastian Heisenberg menyatakan bahwa tidak mungkin mengetahui secara bersamaan posisi dan momentum partikel dengan akurasi tak terbatas. Semakin tepat posisi diketahui, semakin tidak tepat momentum diketahui, dan sebaliknya.
+							</div>
+						</div>
+					</div>
+
+					<!-- Soal Kuantum 3 -->
+					<div class="quiz-card bg-white rounded-xl shadow-md p-4 mb-4 hidden">
+						<div class="flex items-center mb-3">
+							<div class="bg-primary/10 text-primary p-2 rounded-lg mr-3">
+								<i class="fas fa-question"></i>
+							</div>
+							<h3 class="font-bold text-gray-800">Apa yang dimaksud dengan superposisi kuantum?</h3>
+						</div>
+						
+						<div class="space-y-2">
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								A. Penjumlahan dua gelombang klasik
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								B. Keadaan partikel yang bergerak sangat cepat
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="true">
+								C. Keadaan di mana sistem kuantum dapat berada dalam beberapa keadaan sekaligus sampai diukur
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								D. Interaksi antara dua partikel identik
+							</div>
+						</div>
+						
+						<div class="mt-3 hidden" id="explanation-3">
+							<div class="bg-green-50 text-green-800 p-3 rounded-lg text-sm">
+								<i class="fas fa-check-circle mr-1"></i> <strong>Jawaban benar:</strong> Superposisi kuantum adalah prinsip bahwa sistem kuantum dapat berada dalam kombinasi linier dari beberapa keadaan sekaligus sampai dilakukan pengukuran. Setelah pengukuran, sistem "kolaps" ke salah satu keadaan.
+							</div>
+						</div>
+					</div>
+
+                    <!-- Question 4 -->
+                    <div class="quiz-card bg-white rounded-xl shadow-md p-4 mb-4 hidden">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-primary/10 text-primary p-2 rounded-lg mr-3">
+                                <i class="fas fa-question"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800">Apa itu keterikatan kuantum (quantum entanglement)?</h3>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+                               	A. Proses mengikat dua partikel dengan tali kuantum
+                            </div>
+                            <div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+                               	B. Interaksi antara dua partikel yang sangat kuat
+                            </div>
+                            <div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="true">
+                               	C. Fenomena di mana keadaan kuantum dua partikel menjadi saling terkait sedemikian rupa sehingga pengukuran pada satu partikel langsung mempengaruhi yang lain
+                            </div>
+                            <div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+                               	D. Proses memisahkan partikel kuantum
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 hidden" id="explanation-4">
+                            <div class="bg-green-50 text-green-800 p-3 rounded-lg text-sm">
+                                <i class="fas fa-check-circle mr-1"></i> <strong>Jawaban benar:</strong> Keterikatan kuantum adalah fenomena di mana pasangan atau kelompok partikel kuantum berada dalam keadaan yang saling terkait sedemikian rupa sehingga keadaan kuantum setiap partikel tidak dapat dijelaskan secara terpisah. Pengukuran pada satu partikel langsung mempengaruhi hasil pengukuran pada partikel lainnya, terlepas dari jarak yang memisahkan mereka.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 5 -->
+                    <div class="quiz-card bg-white rounded-xl shadow-md p-4 mb-4 hidden">
+                        <div class="flex items-center mb-3">
+                            <div class="bg-primary/10 text-primary p-2 rounded-lg mr-3">
+                                <i class="fas fa-question"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800">Apa persamaan Schrödinger bergantung waktu?</h3>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								A. \(i\hbar \frac{\partial^2 \psi}{\partial t^2} = \hat{H} \psi\)
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								B. \(\hbar^2 \frac{\partial \psi}{\partial t} = \hat{H} \psi\)
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="true">
+								C. \(i\hbar \frac{\partial \psi}{\partial t} = \hat{H} \psi\)
+							</div>
+							<div class="option bg-gray-100 text-gray-800 p-3 rounded-lg cursor-pointer" data-correct="false">
+								D. \(\frac{\partial \psi}{\partial t} = i\hbar \hat{H} \psi\)
+							</div>
+						</div>
+                        
+                        <div class="mt-3 hidden" id="explanation-5">
+                            <div class="bg-green-50 text-green-800 p-3 rounded-lg text-sm">
+                                <i class="fas fa-check-circle mr-1"></i> <strong>Jawaban benar:</strong> Persamaan Schrödinger bergantung waktu adalah \(i\hbar \frac{\partial \psi}{\partial t} = \hat{H} \psi\), di mana \(\psi\) adalah fungsi gelombang, \(\hat{H}\) adalah operator Hamiltonian, \(i\) adalah unit imajiner, dan \(\hbar\) adalah konstanta Planck tereduksi. Persamaan ini menggambarkan evolusi waktu dari keadaan kuantum.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Screen -->
+                    <div id="results-screen" class="hidden text-center py-8">
+                        <div class="bg-gradient-to-r from-green-100 to-primary/10 p-6 rounded-xl shadow-md mb-6">
+                            <div class="w-24 h-24 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 pulse-animation">
+                                <i class="fas fa-trophy text-3xl"></i>
+                            </div>
+                            <h3 class="font-bold text-xl text-gray-800 mb-2">Quiz Selesai!</h3>
+                            <p class="text-gray-600 mb-4">Kamu telah menyelesaikan soal harian hari ini</p>
+                            
+                            <div class="bg-white p-4 rounded-lg shadow-sm inline-block">
+                                <div class="text-4xl font-bold text-primary mb-1" id="final-score">0</div>
+                                <div class="text-xs text-gray-500">Total Poin</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <div class="bg-white p-3 rounded-lg shadow-sm">
+                                <div class="text-primary text-xl font-bold mb-1" id="correct-answers">0</div>
+                                <div class="text-xs text-gray-500">Jawaban Benar</div>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg shadow-sm">
+                                <div class="text-red-500 text-xl font-bold mb-1" id="wrong-answers">0</div>
+                                <div class="text-xs text-gray-500">Jawaban Salah</div>
+                            </div>
+                        </div>
+                        
+                        <button id="try-again-btn" class="w-full py-3 bg-primary text-white rounded-lg font-medium">
+                            <i class="fas fa-redo mr-2"></i> Coba Lagi
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Perbaikan untuk tombol navigasi -->
+                <div class="nav-buttons-container">
+                    <button id="prev-btn" class="nav-button nav-button-secondary hidden">
+                        <i class="fas fa-arrow-left mr-2"></i> Sebelumnya
+                    </button>
+                    <button id="next-btn" class="nav-button nav-button-primary ml-auto">
+                        Selanjutnya <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                    <button id="submit-btn" class="nav-button nav-button-primary hidden">
+                        <i class="fas fa-paper-plane mr-2"></i> Kirim
+                    </button>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Bottom Navigation - Updated to match the example -->
+        <nav class="bottom-nav bg-white p-2 flex justify-around items-center">
+            <a href="index2.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-home nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Beranda</span>
+            </a>
+            <a href="video.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-video nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Video</span>
+            </a>
+            <a href="kategori materi.html" class="flex flex-col items-center text-gray-500">
+				<i class="fas fa-quran nav-icon text-xl"></i>
+				<span class="text-xs mt-1">Materi Harian</span>
+			</a>
+            <a href="kategori soal.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-book-open nav-icon text-xl active"></i>
+                <span class="text-xs mt-1">Soal Harian</span>
+            </a>
+            <a href="profil.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-user nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Profil</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // Quiz Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const quizCards = document.querySelectorAll('.quiz-card');
+            const totalQuestions = quizCards.length;
+            const totalQuestionsElement = document.getElementById('total-questions');
+            const currentQuestionElement = document.getElementById('current-question');
+            const currentScoreElement = document.getElementById('current-score');
+            const scoreProgressElement = document.getElementById('score-progress');
+            const nextButton = document.getElementById('next-btn');
+            const prevButton = document.getElementById('prev-btn');
+            const submitButton = document.getElementById('submit-btn');
+            const resultsScreen = document.getElementById('results-screen');
+            const finalScoreElement = document.getElementById('final-score');
+            const correctAnswersElement = document.getElementById('correct-answers');
+            const wrongAnswersElement = document.getElementById('wrong-answers');
+            const tryAgainButton = document.getElementById('try-again-btn');
+            const progressRing = document.getElementById('progress-ring');
+            const streakDaysElement = document.getElementById('streak-days');
+            const rewardBadgeElement = document.getElementById('reward-badge');
+            
+            let currentQuestion = 0;
+            let score = 0;
+            let correctAnswers = 0;
+            let wrongAnswers = 0;
+            let answeredQuestions = Array(totalQuestions).fill(false);
+            let streakDays = 3; // Default streak days
+            
+            // Initialize quiz
+            totalQuestionsElement.textContent = totalQuestions;
+            currentQuestionElement.textContent = currentQuestion + 1;
+            streakDaysElement.textContent = streakDays + ' hari beruntun';
+            
+            // Show first question
+            quizCards[currentQuestion].classList.remove('hidden');
+            
+            // Update progress ring
+            function updateProgressRing() {
+                const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+                const offset = 100 - progress;
+                progressRing.style.strokeDashoffset = offset;
+            }
+            
+            // Update reward badge based on score
+            function updateRewardBadge() {
+                if (score >= 80) {
+                    rewardBadgeElement.innerHTML = '<i class="fas fa-gem reward-icon"></i> Emas';
+                } else if (score >= 60) {
+                    rewardBadgeElement.innerHTML = '<i class="fas fa-award reward-icon"></i> Perak';
+                } else if (score >= 40) {
+                    rewardBadgeElement.innerHTML = '<i class="fas fa-medal reward-icon"></i> Perunggu';
+                } else {
+                    rewardBadgeElement.innerHTML = '<i class="fas fa-lock reward-icon"></i> Kunci';
+                }
+            }
+            
+            // Option click handler
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    if (answeredQuestions[currentQuestion]) return;
+                    
+                    const isCorrect = this.getAttribute('data-correct') === 'true';
+                    const quizCard = this.closest('.quiz-card');
+                    const explanation = quizCard.querySelector(`#explanation-${currentQuestion + 1}`);
+                    
+                    // Mark all options
+                    const options = quizCard.querySelectorAll('.option');
+                    options.forEach(opt => {
+                        if (opt.getAttribute('data-correct') === 'true') {
+                            opt.classList.add('correct-answer');
+                        } else {
+                            opt.classList.add('wrong-answer');
+                        }
+                        opt.style.pointerEvents = 'none';
+                    });
+                    
+                    // Update score and counters
+                    if (isCorrect) {
+                        score += 20;
+                        correctAnswers++;
+                        quizCard.classList.add('correct');
+                        
+                        // Add streak day if all answers are correct
+                        if (correctAnswers === totalQuestions) {
+                            streakDays++;
+                            streakDaysElement.textContent = streakDays + ' hari beruntun';
+                        }
+                    } else {
+                        wrongAnswers++;
+                        quizCard.classList.add('wrong');
+                    }
+                    
+                    // Show explanation
+                    explanation.classList.remove('hidden');
+                    
+                    // Update UI
+                    currentScoreElement.textContent = score;
+                    scoreProgressElement.style.width = `${score}%`;
+                    updateProgressRing();
+                    updateRewardBadge();
+                    
+                    // Mark question as answered
+                    answeredQuestions[currentQuestion] = true;
+                    
+                    // Update navigation buttons
+                    updateNavigationButtons();
+                });
+            });
+            
+            // Next button click handler
+            nextButton.addEventListener('click', function() {
+                if (currentQuestion < totalQuestions - 1) {
+                    // Hide current question
+                    quizCards[currentQuestion].classList.add('hidden');
+                    
+                    // Show next question
+                    currentQuestion++;
+                    quizCards[currentQuestion].classList.remove('hidden');
+                    
+                    // Update UI
+                    currentQuestionElement.textContent = currentQuestion + 1;
+                    updateProgressRing();
+                    
+                    // Update navigation buttons
+                    updateNavigationButtons();
+                }
+            });
+            
+            // Previous button click handler
+            prevButton.addEventListener('click', function() {
+                if (currentQuestion > 0) {
+                    // Hide current question
+                    quizCards[currentQuestion].classList.add('hidden');
+                    
+                    // Show previous question
+                    currentQuestion--;
+                    quizCards[currentQuestion].classList.remove('hidden');
+                    
+                    // Update UI
+                    currentQuestionElement.textContent = currentQuestion + 1;
+                    updateProgressRing();
+                    
+                    // Update navigation buttons
+                    updateNavigationButtons();
+                }
+            });
+            
+            // Submit button click handler
+            submitButton.addEventListener('click', function() {
+                // Hide current question
+                quizCards[currentQuestion].classList.add('hidden');
+                
+                // Show results screen
+                resultsScreen.classList.remove('hidden');
+                
+                // Update results
+                finalScoreElement.textContent = score;
+                correctAnswersElement.textContent = correctAnswers;
+                wrongAnswersElement.textContent = wrongAnswers;
+                
+                // Celebrate if perfect score
+                if (correctAnswers === totalQuestions) {
+                    createConfetti();
+                }
+            });
+            
+            // Try again button click handler
+            tryAgainButton.addEventListener('click', function() {
+                // Reset quiz
+                resetQuiz();
+                
+                // Hide results screen
+                resultsScreen.classList.add('hidden');
+                
+                // Show first question
+                quizCards[0].classList.remove('hidden');
+            });
+            
+            // Update navigation buttons based on current question
+            function updateNavigationButtons() {
+                // Previous button
+                if (currentQuestion > 0) {
+                    prevButton.classList.remove('hidden');
+                } else {
+                    prevButton.classList.add('hidden');
+                }
+                
+                // Next/Submit button
+                if (currentQuestion < totalQuestions - 1) {
+                    nextButton.classList.remove('hidden');
+                    submitButton.classList.add('hidden');
+                } else {
+                    nextButton.classList.add('hidden');
+                    if (answeredQuestions[currentQuestion]) {
+                        submitButton.classList.remove('hidden');
+                    } else {
+                        submitButton.classList.add('hidden');
+                    }
+                }
+                
+                // Disable next/submit if current question not answered
+                if (!answeredQuestions[currentQuestion] && currentQuestion < totalQuestions - 1) {
+                    nextButton.disabled = true;
+                    nextButton.classList.add('opacity-50');
+                } else {
+                    nextButton.disabled = false;
+                    nextButton.classList.remove('opacity-50');
+                }
+            }
+            
+            // Reset quiz function
+            function resetQuiz() {
+                currentQuestion = 0;
+                score = 0;
+                correctAnswers = 0;
+                wrongAnswers = 0;
+                answeredQuestions = Array(totalQuestions).fill(false);
+                
+                // Reset UI
+                currentQuestionElement.textContent = 1;
+                currentScoreElement.textContent = 0;
+                scoreProgressElement.style.width = '0%';
+                progressRing.style.strokeDashoffset = '100';
+                updateRewardBadge();
+                
+                // Reset all questions
+                quizCards.forEach((card, index) => {
+                    card.classList.remove('correct', 'wrong');
+                    if (index !== 0) {
+                        card.classList.add('hidden');
+                    }
+                    
+                    const options = card.querySelectorAll('.option');
+                    options.forEach(opt => {
+                        opt.classList.remove('correct-answer', 'wrong-answer');
+                        opt.style.pointerEvents = 'auto';
+                    });
+                    
+                    const explanation = card.querySelector(`#explanation-${index + 1}`);
+                    if (explanation) {
+                        explanation.classList.add('hidden');
+                    }
+                });
+                
+                // Reset navigation buttons
+                updateNavigationButtons();
+            }
+
+            // Create confetti effect
+            function createConfetti() {
+                const colors = ['#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#8b5cf6'];
+                
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = -10 + 'px';
+                    confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                    confetti.style.opacity = '1';
+                    
+                    document.querySelector('.app-container').appendChild(confetti);
+                    
+                    const animationDuration = Math.random() * 3 + 2;
+                    
+                    confetti.style.transition = `all ${animationDuration}s ease-out`;
+                    
+                    setTimeout(() => {
+                        confetti.style.top = '100%';
+                        confetti.style.left = confetti.offsetLeft + (Math.random() * 200 - 100) + 'px';
+                        confetti.style.opacity = '0';
+                    }, 10);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, animationDuration * 1000);
+                }
+            }
+
+            // Bottom nav interaction
+            const navItems = document.querySelectorAll('.nav-icon');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all
+                    navItems.forEach(nav => {
+                        nav.classList.remove('active');
+                        nav.parentElement.classList.remove('text-primary');
+                        nav.parentElement.classList.add('text-gray-500');
+                    });
+                    
+                    // Add to clicked
+                    this.classList.add('active');
+                    this.parentElement.classList.add('text-primary');
+                    this.parentElement.classList.remove('text-gray-500');
+                });
+            });
+
+            // Initialize progress ring
+            updateProgressRing();
+            updateRewardBadge();
+        });
+    </script>
+</body>
+</html>
