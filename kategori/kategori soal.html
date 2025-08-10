@@ -309,24 +309,26 @@
             <!-- Calculator Section -->
             <section class="calculator">
                 <h3>Physics Calculator</h3>
-                <div class="calculator-inputs">
-                    <div class="input-group">
-                        <label for="mass">Mass (kg)</label>
-                        <input type="number" id="mass" placeholder="Enter mass">
-                    </div>
-                    <div class="input-group">
-                        <label for="velocity">Velocity (m/s)</label>
-                        <input type="number" id="velocity" placeholder="Enter velocity">
-                    </div>
-                    <div class="input-group">
-                        <label for="distance">Distance (m)</label>
-                        <input type="number" id="distance" placeholder="Enter distance">
-                    </div>
-                    <div class="input-group">
-                        <label for="time">Time (s)</label>
-                        <input type="number" id="time" placeholder="Enter time">
-                    </div>
-                </div>
+                <div class="calculator-inputs grid grid-cols-2 gap-4">
+					<div class="input-group">
+						<label for="mass">Mass (kg)</label>
+						<input type="number" id="mass" placeholder="Enter mass">
+					</div>
+					<div class="input-group">
+						<label for="velocity">Velocity (m/s)</label>
+						<input type="number" id="velocity" placeholder="Enter velocity">
+					</div>
+					<div class="input-group">
+						<label for="distance">Distance (m)</label>
+						<input type="number" id="distance" placeholder="Enter distance">
+					</div>
+					<div class="input-group">
+						<label for="time">Time (s)</label>
+						<input type="number" id="time" placeholder="Enter time">
+					</div>
+				</div>
+
+
                 <div class="calculator-buttons">
                     <button class="calc-btn" onclick="calculateKineticEnergy()">Kinetic Energy</button>
                     <button class="calc-btn" onclick="calculateVelocity()">Velocity</button>
