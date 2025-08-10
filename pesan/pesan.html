@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Chat Biru Modern</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #e6f0fb;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      /* biarkan scroll jika perlu */
+      overflow-y: auto;
+    }
+
+    #topBar {
+      background: #1976d2;
+      padding: 15px;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    #searchContainer {
+      padding: 10px;
+      background: #ffffff;
+      border-bottom: 1px solid #ccc;
+      flex-shrink: 0;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 30px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #searchResults {
+      margin-top: 6px;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    #searchResults button {
+      background: #f7f9fc;
+      border: none;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 4px;
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 14px;
+    }
+
+    #searchResults button:hover {
+      background: #e3f2fd;
+    }
+
+    #chatBox {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background: #e6f0fb;
+      display: flex;
+      flex-direction: column;
+      min-height: 0; /* penting untuk flex container agar scroll berfungsi */
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 18px;
+      margin-bottom: 10px;
+      max-width: 75%;
+      font-size: 14px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      white-space: pre-wrap; /* supaya enter tetap terlihat */
+    }
+
+    .mine {
+      background: #bbdefb;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .theirs {
+      background: #ffffff;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    #inputArea {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background: #ffffff;
+      border-top: 1px solid #ccc;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    #messageInput {
+      flex: 1;
+      padding: 10px 16px;
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #sendBtn {
+      margin-left: 10px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #sendBtn i {
+      font-size: 16px;
+    }
+
+    #sendBtn:hover {
+      background: #1565c0;
+    }
+
+    @media (max-width: 480px) {
+      #topBar {
+        font-size: 16px;
+        padding: 12px;
+      }
+      #messageInput {
+        font-size: 13px;
+      }
+	  tyle>
+  .message {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 8px;
+    max-width: 80%;
+    position: relative;
+  }
+
+  .mine {
+    background-color: #dcf8c6;
+    align-self: flex-end;
+  }
+
+  .theirs {
+    background-color: #f1f0f0;
+    align-self: flex-start;
+  }
+
+  .delete-icon {
+    color: blue;
+    font-size: 14px;
+    position: relative;
+    top: 2px;
+  }
+
+	  
+    }
+  </style>
+</head>
+<body>
+
+  <div id="topBar"><i class="fas fa-comments"></i> Teta Chat</div>
+
+  <div id="searchContainer">
+    <input type="text" id="searchInput" placeholder="Cari pengguna..." oninput="filterUsers()" />
+    <div id="searchResults"></div>
+  </div>
+
+  <div id="chatBox"></div>
+
+  <div id="inputArea">
+    <input type="text" id="messageInput" placeholder="Ketik pesan..." />
+    <button id="sendBtn" onclick="sendMessage()">
+      <i class="fas fa-paper-plane"></i>
+    </button>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJ5I8k2MzAyDLt9fUcXHRNtRVjKB_ETLY",
+      authDomain: "projectid-81104.firebaseapp.com",
+      projectId: "projectid-81104",
+      storageBucket: "projectid-81104.appspot.com",
+      messagingSenderId: "554913260457",
+      appId: "1:554913260457:web:bf988867ebfd902c651ab8",
+      measurementId: "G-8WFHQW5WGN"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let receiverId = null;
+    let unsubscribe = null;
+    let allUsers = [];
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loadAllUsers();
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    function loadAllUsers() {
+      db.collection('users').get().then(snapshot => {
+        allUsers = snapshot.docs
+          .filter(doc => doc.id !== currentUser.uid)
+          .map(doc => ({ id: doc.id, ...doc.data() }));
+      });
+    }
+
+    function filterUsers() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const resultBox = document.getElementById('searchResults');
+      resultBox.innerHTML = '';
+
+      const results = allUsers.filter(user =>
+        (user.username || '').toLowerCase().includes(query)
+      );
+
+      results.forEach(user => {
+        const btn = document.createElement('button');
+        btn.innerHTML = `<i class="fas fa-user"></i> ${user.username || user.email || 'Tanpa Nama'}`;
+        btn.onclick = () => {
+          receiverId = user.id;
+          loadChat();
+          document.getElementById('searchResults').innerHTML = '';
+          document.getElementById('searchInput').value = user.username;
+        };
+        resultBox.appendChild(btn);
+      });
+    }
+
+    function sendMessage() {
+      const text = document.getElementById('messageInput').value.trim();
+      if (!receiverId || !text) return;
+
+      const chatId = [currentUser.uid, receiverId].sort().join('_');
+      db.collection('chats').doc(chatId).collection('messages').add({
+        senderId: currentUser.uid,
+        receiverId: receiverId,
+        text: text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      document.getElementById('messageInput').value = '';
+    }
+
+    function loadChat() {
+  const chatId = [currentUser.uid, receiverId].sort().join('_');
+  if (unsubscribe) unsubscribe();
+
+  unsubscribe = db.collection('chats').doc(chatId)
+    .collection('messages')
+    .orderBy('timestamp')
+    .onSnapshot(snapshot => {
+      const chatBox = document.getElementById('chatBox');
+      chatBox.innerHTML = '';
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const msg = document.createElement('div');
+        msg.className = 'message ' + (data.senderId === currentUser.uid ? 'mine' : 'theirs');
+        msg.textContent = data.text;
+        msg.setAttribute('data-id', doc.id); // penting: simpan ID dokumen
+
+        // Buat tombol hapus (ikon sampah)
+        const deleteIcon = document.createElement('i');
+        deleteIcon.className = 'fas fa-trash delete-icon';
+        deleteIcon.style.display = 'none'; // awalnya tersembunyi
+        deleteIcon.style.marginLeft = '10px';
+        deleteIcon.style.cursor = 'pointer';
+
+        // Saat ikon diklik, hapus pesan
+        deleteIcon.addEventListener('click', (e) => {
+          e.stopPropagation(); // cegah pemicu klik parent
+          const messageId = msg.getAttribute('data-id');
+          db.collection('chats').doc(chatId)
+            .collection('messages').doc(messageId)
+            .delete();
+        });
+
+        // Tambahkan ikon ke pesan
+        msg.appendChild(deleteIcon);
+
+        // Saat pesan diklik, tampilkan ikon hapus
+        msg.addEventListener('click', () => {
+          const alreadyVisible = deleteIcon.style.display === 'inline';
+          // Sembunyikan ikon di semua pesan lain
+          document.querySelectorAll('.delete-icon').forEach(icon => icon.style.display = 'none');
+          deleteIcon.style.display = alreadyVisible ? 'none' : 'inline';
+        });
+
+        chatBox.appendChild(msg);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+}
+
+  </script>
+</body>
+</html>
