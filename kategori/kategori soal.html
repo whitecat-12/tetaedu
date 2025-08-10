@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics & Biology Study - Question Categories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #38b2ac;
+            --secondary: #0e7490;
+            --accent: #f59e0b;
+            --physics: #10b981;
+            --biology: #3b82f6;
+            --chemistry: #8b5cf6;
+            --math: #ec4899;
+        }
+        
+        body {
+            font-family: 'Baloo 2', cursive;
+            background-color: #f8fafc;
+        }
+        
+        .app-container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 414px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            background: white;
+            z-index: 10;
+        }
+        
+        .nav-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-icon.active {
+            transform: translateY(-10px);
+            color: var(--primary);
+        }
+        
+        .floating-btn {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        
+        .islamic-pattern {
+            background-image: radial-gradient(rgba(56, 178, 172, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .section-content {
+            display: none;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            margin-top: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        
+        .active-section {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .video-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .video-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .sticker {
+            position: absolute;
+            right: -10px;
+            top: -10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            transform: rotate(15deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .achievement-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .achievement-badge::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            border: 2px dashed currentColor;
+            opacity: 0.3;
+            animation: spin 10s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .app-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .app-logo-icon {
+            background: linear-gradient(135deg, #38b2ac, #0e7490);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+        
+        .app-name {
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, #38b2ac, #0e7490);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Calculator Styles */
+        .calculator {
+            background: #f0f8ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .calculator h3 {
+            text-align: center;
+            margin-bottom: 12px;
+            color: #0e7490;
+            font-weight: 600;
+        }
+        
+        .calculator-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #38b2ac;
+        }
+        
+        .input-group input {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .calc-btn {
+            padding: 8px;
+            border-radius: 8px;
+            border: none;
+            background: #38b2ac;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .calc-btn:hover {
+            background: #0e7490;
+        }
+        
+        .result {
+            margin-top: 12px;
+            padding: 12px;
+            background: #e6fffa;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #0e7490;
+            display: none;
+        }
+        
+        .question-category {
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+        
+        .question-category:hover {
+            transform: translateX(5px);
+        }
+        
+        .difficulty-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile App Container -->
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="bg-gradient-to-r from-primary to-secondary p-4 text-white">
+            <div class="flex justify-between items-center">
+               <div class="app-logo">
+                    <div class="app-logo-icon" style="background: #4f91f2; color: white;">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h1 class="app-name" style="color: #4f91f2;">TETA SAINS</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-search"></i>
+                    <i class="fas fa-user-circle text-xl"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content Area -->
+        <main class="pb-20 islamic-pattern">
+            <!-- Calculator Section -->
+            <section class="calculator">
+                <h3>Physics Calculator</h3>
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label for="mass">Mass (kg)</label>
+                        <input type="number" id="mass" placeholder="Enter mass">
+                    </div>
+                    <div class="input-group">
+                        <label for="velocity">Velocity (m/s)</label>
+                        <input type="number" id="velocity" placeholder="Enter velocity">
+                    </div>
+                    <div class="input-group">
+                        <label for="distance">Distance (m)</label>
+                        <input type="number" id="distance" placeholder="Enter distance">
+                    </div>
+                    <div class="input-group">
+                        <label for="time">Time (s)</label>
+                        <input type="number" id="time" placeholder="Enter time">
+                    </div>
+                </div>
+                <div class="calculator-buttons">
+                    <button class="calc-btn" onclick="calculateKineticEnergy()">Kinetic Energy</button>
+                    <button class="calc-btn" onclick="calculateVelocity()">Velocity</button>
+                    <button class="calc-btn" onclick="calculateForce()">Force</button>
+                    <button class="calc-btn" onclick="calculateWork()">Work Done</button>
+                </div>
+                <div class="result" id="calcResult"></div>
+            </section>
+            
+            <!-- Page Title -->
+            <section class="p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Science Question Categories</h2>
+                        <p class="text-sm text-gray-600">Select a category to test your science knowledge</p>
+                    </div>
+                    <div class="bg-primary/10 text-primary p-3 rounded-full">
+                        <i class="fas fa-question-circle text-xl"></i>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Question Categories -->
+            <section class="p-4">
+                <!-- Electrodynamics Questions -->
+                <div class="question-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-green-500" onclick="window.location.href='../kelas/termodinamika 1.html'">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-green-100 text-green-600 p-3 rounded-lg mr-3">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Termodinamika</h3>
+                                <p class="text-xs text-gray-500">Hukum Ohm, Kirchhoff, dan rangkaian</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="difficulty-badge bg-green-100 text-green-800">Sedang</span>
+                            <span class="text-xs text-gray-500 mt-1">5 soal</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Optics Questions -->
+               <div class="question-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-blue-500" onclick="window.location.href='../kelas/fisika cahaya.html'">
+					<div class="flex justify-between items-center">
+						<div class="flex items-center">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-lg mr-3">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Fisika Cahaya</h3>
+                                <p class="text-xs text-gray-500">Refleksi, refraksi, lensa, dan interferensi</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="difficulty-badge bg-blue-100 text-blue-800">Sulit</span>
+                            <span class="text-xs text-gray-500 mt-1">5 soal</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Astrophysics Questions -->
+                <div class="question-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-purple-500" onclick="window.location.href='../kelas/astrofisika.html'">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 text-purple-600 p-3 rounded-lg mr-3">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Astrofisika</h3>
+                                <p class="text-xs text-gray-500">Fisika bintang, galaksi, dan kosmologi</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="difficulty-badge bg-purple-100 text-purple-800">Sulit</span>
+                            <span class="text-xs text-gray-500 mt-1">5 soal</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Atomic Physics Questions -->
+                <div class="question-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-yellow-500" onclick="window.location.href='../kelas/fisika atom.html'">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-yellow-100 text-yellow-600 p-3 rounded-lg mr-3">
+                                <i class="fas fa-atom"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Fisika Atom</h3>
+                                <p class="text-xs text-gray-500">Struktur atom, spektrum, dan model atom</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="difficulty-badge bg-yellow-100 text-yellow-800">Sulit</span>
+                            <span class="text-xs text-gray-500 mt-1">5 soal</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Neurology Questions -->
+                <div class="question-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-red-500" onclick="window.location.href='../kelas/soal neurologi.html'">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-red-100 text-red-600 p-3 rounded-lg mr-3">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Neurologi</h3>
+                                <p class="text-xs text-gray-500">Sistem saraf, otak, dan gangguan neurologis</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="difficulty-badge bg-red-100 text-red-800">Sulit</span>
+                            <span class="text-xs text-gray-500 mt-1">5 soal</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Molecular Biology Questions -->
+                <div class="question-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-pink-500" onclick="window.location.href='../kelas/biologi molekuler.html'">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-pink-100 text-pink-600 p-3 rounded-lg mr-3">
+                                <i class="fas fa-dna"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Biologi Molekuler</h3>
+                                <p class="text-xs text-gray-500">DNA, RNA, protein, dan replikasi</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="difficulty-badge bg-pink-100 text-pink-800">Sedang</span>
+                            <span class="text-xs text-gray-500 mt-1">5 soal</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Electronics Questions -->
+                <div class="question-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-indigo-500" onclick="window.location.href='../kelas/elektronika.html'">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-indigo-100 text-indigo-600 p-3 rounded-lg mr-3">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Elektronika</h3>
+                                <p class="text-xs text-gray-500">Komponen, sirkuit, dan aplikasi elektronik</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="difficulty-badge bg-indigo-100 text-indigo-800">Sedang</span>
+                            <span class="text-xs text-gray-500 mt-1">5 soal</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quantum Physics Questions -->
+                <div class="question-category bg-white rounded-lg shadow-sm p-4 border-l-teal-500" onclick="window.location.href='../kelas/soal fisika.html'">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-teal-100 text-teal-600 p-3 rounded-lg mr-3">
+                                <i class="fas fa-infinity"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Fisika Kuantum</h3>
+                                <p class="text-xs text-gray-500">Prinsip ketidakpastian, superposisi, dan entanglement</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="difficulty-badge bg-teal-100 text-teal-800">Sulit</span>
+                            <span class="text-xs text-gray-500 mt-1">5 soal</span>
+                        </div>
+                    </div>
+                </div>
+       
+            
+                      
+           
+               
+        </main>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav bg-white p-2 flex justify-around items-center">
+            <a href="../index2.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-home nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Beranda</span>
+            </a>
+            <a href="kategori soal.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-flask nav-icon text-xl active"></i>
+                <span class="text-xs mt-1">Soal Harian</span>
+            </a>
+            <a href="../ai/index.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-robot nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Nayra AI</span>
+            </a>
+            <a href="kategori materi.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-chalkboard-teacher nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Materi Harian</span>
+            </a>
+            <a href="../profil.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-user nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Profil</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // Simple interaction for bottom nav
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-icon');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all
+                    navItems.forEach(nav => {
+                        nav.classList.remove('active');
+                        nav.parentElement.classList.remove('text-primary');
+                        nav.parentElement.classList.add('text-gray-500');
+                    });
+                    
+                    // Add to clicked
+                    this.classList.add('active');
+                    this.parentElement.classList.add('text-primary');
+                    this.parentElement.classList.remove('text-gray-500');
+                });
+            });
+            
+            // Set current page as active
+            document.querySelector('.bottom-nav a[href="soal.html"] i').classList.add('active');
+            document.querySelector('.bottom-nav a[href="soal.html"]').classList.add('text-primary');
+            document.querySelector('.bottom-nav a[href="soal.html"]').classList.remove('text-gray-500');
+        });
+        
+        function showQuestionCategory(category) {
+            // In a real app, this would navigate to the selected category
+            alert(`Opening category: ${category}`);
+            
+            // For demo purposes, we'll just show an alert
+            const categoryNames = {
+                'elektrodinamika': 'Elektrodinamika',
+                'optik': 'Fisika Cahaya',
+                'astrofisika': 'Astrofisika',
+                'atom': 'Fisika Atom',
+                'neurologi': 'Neurologi',
+                'biomolekuler': 'Biologi Molekuler',
+                'elektronika': 'Elektronika',
+                'kuantum': 'Fisika Kuantum'
+            };
+            
+            alert(`You will start practicing ${categoryNames[category]}.`);
+        }
+        
+        // Calculator functions
+        function calculateKineticEnergy() {
+            const mass = parseFloat(document.getElementById('mass').value);
+            const velocity = parseFloat(document.getElementById('velocity').value);
+            
+            if (isNaN(mass) || isNaN(velocity)) {
+                alert("Please enter valid numbers for mass and velocity");
+                return;
+            }
+            
+            const kineticEnergy = 0.5 * mass * velocity * velocity;
+            document.getElementById('calcResult').innerHTML = `Kinetic Energy: ${kineticEnergy} Joules`;
+            document.getElementById('calcResult').style.display = 'block';
+        }
+        
+        function calculateVelocity() {
+            const distance = parseFloat(document.getElementById('distance').value);
+            const time = parseFloat(document.getElementById('time').value);
+            
+            if (isNaN(distance) || isNaN(time) || time === 0) {
+                alert("Please enter valid numbers for distance and time (time cannot be zero)");
+                return;
+            }
+            
+            const velocity = distance / time;
+            document.getElementById('calcResult').innerHTML = `Velocity: ${velocity} m/s`;
+            document.getElementById('calcResult').style.display = 'block';
+        }
+        
+        function calculateForce() {
+            const mass = parseFloat(document.getElementById('mass').value);
+            const acceleration = parseFloat(prompt("Enter acceleration (m/s²):"));
+            
+            if (isNaN(mass) || isNaN(acceleration)) {
+                alert("Please enter valid numbers for mass and acceleration");
+                return;
+            }
+            
+            const force = mass * acceleration;
+            document.getElementById('calcResult').innerHTML = `Force: ${force} Newtons`;
+            document.getElementById('calcResult').style.display = 'block';
+        }
+        
+        function calculateWork() {
+            const force = parseFloat(document.getElementById('mass').value);
+            const distance = parseFloat(document.getElementById('distance').value);
+            
+            if (isNaN(force) || isNaN(distance)) {
+                alert("Please enter valid numbers for force and distance");
+                return;
+            }
+            
+            const work = force * distance;
+            document.getElementById('calcResult').innerHTML = `Work Done: ${work} Joules`;
+            document.getElementById('calcResult').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

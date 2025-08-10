@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teta Dakwa - Neurologi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Baloo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --primary: #38b2ac;
+            --secondary: #0e7490;
+            --accent: #f59e0b;
+            --quran: #10b981;
+            --fiqh: #3b82f6;
+            --hadith: #8b5cf6;
+            --islamic: #ec4899;
+        }
+        
+        body {
+            font-family: 'Baloo 2', cursive;
+            background-color: #f8fafc;
+        }
+        
+        .arabic {
+            font-family: 'Amiri', serif;
+            font-size: 1.5rem;
+            line-height: 2.5rem;
+            text-align: right;
+            direction: rtl;
+        }
+        
+        .app-container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 414px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            background: white;
+            z-index: 10;
+        }
+        
+        .nav-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-icon.active {
+            transform: translateY(-10px);
+            color: var(--primary);
+        }
+        
+        .article-header {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .article-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .article-meta i {
+            margin-right: 0.3rem;
+        }
+        
+        .article-meta span {
+            margin-right: 1rem;
+        }
+        
+        .article-content {
+            padding: 0 1rem 5rem;
+        }
+        
+        .article-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #d97706;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 0.5rem;
+        }
+        
+        .article-text {
+            line-height: 1.6;
+            text-align: justify;
+            margin-bottom: 1rem;
+        }
+        
+        .highlight-box {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        
+        .hadith-box {
+            background-color: #fffbf0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #fde68a;
+        }
+        
+        .hadith-number {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            background-color: #f59e0b;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .back-button i {
+            margin-right: 0.5rem;
+        }
+        
+        .kitab-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid #f59e0b;
+            transition: all 0.3s ease;
+        }
+        
+        .kitab-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+        }
+        
+        .kitab-number {
+            background-color: #f59e0b;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .app-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .app-logo-icon {
+            background: linear-gradient(135deg, #38b2ac, #0e7490);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+        
+        .app-name {
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, #38b2ac, #0e7490);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background-color: #f59e0b;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile App Container -->
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="bg-gradient-to-r from-primary to-secondary p-4 text-white">
+            <div class="flex justify-between items-center">
+               <div class="app-logo">
+                    <div class="app-logo-icon" style="background: #4f91f2; color: white;">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h1 class="app-name" style="color: #4f91f2;">TETA SAINS</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-user-circle text-xl"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Article Content -->
+        <main class="pb-20">
+            <div class="article-header">
+                <a href="javascript:history.back()" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </a>
+                <h1 class="article-title">Neurologi: Dasar Ilmu Kedokteran</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-book-open"></i> Kedokteran</span>
+                    <span><i class="fas fa-clock"></i> 15 min baca</span>
+                    <span><i class="fas fa-calendar"></i> 10 Agustus 2025</span>
+                </div>
+            </div>
+            
+            <div class="article-content">
+                <!-- Tab Navigation -->
+                <div class="flex overflow-x-auto gap-2 mb-4 pb-2">
+                    <button class="tab-button active" data-tab="pengantar">Pengantar</button>
+                    <button class="tab-button" data-tab="hukum">Sistem Saraf</button>
+                    <button class="tab-button" data-tab="gelombang">Penyakit Neurologis</button>
+                    <button class="tab-button" data-tab="aplikasi">Diagnosis & Terapi</button>
+                </div>
+                
+                <!-- Tab Contents -->
+                <div id="pengantar" class="tab-content active">
+                    <div class="article-section">
+                        <h2 class="section-title"><i class="fas fa-info-circle"></i> Apa Itu Neurologi?</h2>
+                        <p class="article-text">
+                            Neurologi adalah cabang kedokteran yang mempelajari tentang sistem saraf manusia, termasuk otak, sumsum tulang belakang, dan saraf perifer. Ilmu ini menjelaskan bagaimana sistem saraf mengontrol fungsi tubuh serta bagaimana gangguan pada sistem tersebut dapat menyebabkan berbagai penyakit. Neurologi modern berkembang pesat dengan kemajuan teknologi pencitraan dan pemahaman molekuler.
+                        </p>
+                        
+                        <div class="highlight-box">
+                            <p><strong>Prinsip Dasar:</strong> Neurologi berdasarkan pada pemahaman struktur dan fungsi sistem saraf yang kompleks, termasuk interaksi antara neuron, neurotransmiter, dan jaringan saraf.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="article-section">
+                        <h2 class="section-title"><i class="fas fa-star"></i> Konsep Dasar Neurologi</h2>
+                        <div class="grid grid-cols-2 gap-3 mt-3">
+                            <div class="bg-yellow-50 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800">Otak</h3>
+                                <p>Pusat kontrol fungsi tubuh dan pikiran</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800">Sumsum Tulang Belakang</h3>
+                                <p>Saluran informasi antara otak dan tubuh</p>
+                            </div>
+                            <div class="bg-yellow-50 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800">Saraf Perifer</h3>
+                                <p>Jaringan saraf di luar sistem saraf pusat</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800">Neuron</h3>
+                                <p>Sel dasar sistem saraf</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="article-section">
+                        <h2 class="section-title"><i class="fas fa-book"></i> Konsep Penting dalam Neurologi</h2>
+                        
+                        <div class="kitab-card">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <div class="kitab-number">1</div>
+                                    <h3 class="font-bold ml-2">Anatomi Otak</h3>
+                                </div>
+                                <span class="text-sm text-gray-500">Struktur</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Studi tentang bagian-bagian otak dan fungsinya masing-masing.</p>
+                        </div>
+                        
+                        <div class="kitab-card">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <div class="kitab-number">2</div>
+                                    <h3 class="font-bold ml-2">Fisiologi Saraf</h3>
+                                </div>
+                                <span class="text-sm text-gray-500">Fungsi</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Cara kerja sistem saraf dalam mengirim dan menerima sinyal.</p>
+                        </div>
+                        
+                        <div class="kitab-card">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <div class="kitab-number">3</div>
+                                    <h3 class="font-bold ml-2">Neurotransmiter</h3>
+                                </div>
+                                <span class="text-sm text-gray-500">Kimia Otak</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Zat kimia yang membantu komunikasi antar neuron.</p>
+                        </div>
+                        
+                        <div class="kitab-card">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <div class="kitab-number">4</div>
+                                    <h3 class="font-bold ml-2">Jaringan Saraf</h3>
+                                </div>
+                                <span class="text-sm text-gray-500">Konektivitas</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Hubungan kompleks antar neuron dalam sistem saraf.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="hukum" class="tab-content">
+                    <div class="article-section">
+                        <h2 class="section-title"><i class="fas fa-school"></i> Sistem Saraf Manusia</h2>
+                        <p class="article-text">
+                            Sistem saraf manusia terdiri dari sistem saraf pusat (otak dan sumsum tulang belakang) dan sistem saraf perifer (saraf yang terhubung ke sistem saraf pusat). Sistem ini mengontrol semua fungsi tubuh, termasuk gerakan, persepsi sensorik, dan fungsi kognitif.
+                        </p>
+                        
+                        <div class="highlight-box">
+                            <p><strong>Komponen Utama:</strong> Sistem saraf terdiri dari miliaran neuron yang saling terhubung membentuk jaringan kompleks untuk mengolah informasi.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="article-section">
+                        <h2 class="section-title"><i class="fas fa-users"></i> Komponen Sistem Saraf</h2>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg mt-3">
+                            <h3 class="font-bold text-yellow-800">1. Otak</h3>
+                            <p class="text-sm mt-1">Pusat kontrol semua fungsi tubuh dan pikiran</p>
+                            <p class="text-sm mt-1">Terdiri dari serebrum, serebelum, dan batang otak</p>
+                        </div>
+                        
+                        <div class="bg-yellow-100 p-4 rounded-lg mt-3">
+                            <h3 class="font-bold text-yellow-800">2. Sumsum Tulang Belakang</h3>
+                            <p class="text-sm mt-1">Saluran informasi antara otak dan tubuh</p>
+                            <p class="text-sm mt-1">Mengontrol refleks dan gerakan dasar</p>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg mt-3">
+                            <h3 class="font-bold text-yellow-800">3. Saraf Perifer</h3>
+                            <p class="text-sm mt-1">Jaringan saraf di luar sistem saraf pusat</p>
+                            <p class="text-sm mt-1">Terdiri dari saraf sensorik dan motorik</p>
+                        </div>
+                        
+                        <div class="bg-yellow-100 p-4 rounded-lg mt-3">
+                            <h3 class="font-bold text-yellow-800">4. Neuron</h3>
+                            <p class="text-sm mt-1">Sel dasar sistem saraf</p>
+                            <p class="text-sm mt-1">Menerima, memproses, dan mengirim sinyal listrik</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="gelombang" class="tab-content">
+                    <div class="article-section">
+                        <h2 class="section-title"><i class="fas fa-sitemap"></i> Penyakit Neurologis Umum</h2>
+                        <p class="article-text">
+                            Penyakit neurologis adalah gangguan yang mempengaruhi struktur dan fungsi sistem saraf. Penyakit ini dapat bersifat genetik, degeneratif, infeksi, atau akibat trauma. Gejala bervariasi tergantung bagian sistem saraf yang terkena.
+                        </p>
+                        
+                        <div class="grid grid-cols-2 gap-3 mt-3">
+                            <div class="bg-yellow-50 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800"><i class="fas fa-brain"></i> Alzheimer</h3>
+                                <p class="text-sm mt-1">Penyakit degeneratif otak</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800"><i class="fas fa-bolt"></i> Epilepsi</h3>
+                                <p class="text-sm mt-1">Gangguan aktivitas listrik otak</p>
+                            </div>
+                            <div class="bg-yellow-50 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800"><i class="fas fa-wheelchair"></i> Parkinson</h3>
+                                <p class="text-sm mt-1">Gangguan gerak dan koordinasi</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800"><i class="fas fa-head-side-virus"></i> Migrain</h3>
+                                <p class="text-sm mt-1">Sakit kepala berat dengan gejala tambahan</p>
+                            </div>
+                            <div class="bg-yellow-50 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800"><i class="fas fa-stethoscope"></i> Stroke</h3>
+                                <p class="text-sm mt-1">Gangguan aliran darah ke otak</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800"><i class="fas fa-procedures"></i> ALS</h3>
+                                <p class="text-sm mt-1">Penyakit motor neuron</p>
+                            </div>
+                            <div class="bg-yellow-50 p-3 rounded-lg">
+                                <h3 class="font-bold text-yellow-800"><i class="fas fa-allergies"></i> Neuropati</h3>
+                                <p class="text-sm mt-1">Kerusakan saraf perifer</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="article-section">
+                        <h2 class="section-title"><i class="fas fa-balance-scale"></i> Gejala Penyakit Neurologis</h2>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mt-3">
+                            <h3 class="font-bold text-yellow-800 flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i> Gejala Motorik
+                            </h3>
+                            <p class="text-sm mt-1">Tremor, kekakuan, kesulitan berjalan</p>
+                            <p class="text-sm mt-1">Kelemahan otot, kehilangan koordinasi</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mt-3">
+                            <h3 class="font-bold text-yellow-800 flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i> Gejala Sensorik
+                            </h3>
+                            <p class="text-sm mt-1">Mati rasa, kesemutan, nyeri saraf</p>
+                            <p class="text-sm mt-1">Perubahan persepsi sensorik</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mt-3">
+                            <h3 class="font-bold text-yellow-800 flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i> Gejala Kognitif
+                            </h3>
+                            <p class="text-sm mt-1">Penurunan memori, kesulitan berpikir</p>
+                            <p class="text-sm mt-1">Perubahan perilaku dan mood</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="aplikasi" class="tab-content">
+                    <div class="article-section">
+                        <h2 class="section-title"><i class="fas fa-crown"></i> Diagnosis & Terapi Neurologi</h2>
+                        <p class="article-text">
+                            Neurologi memiliki berbagai metode diagnosis dan terapi untuk menangani penyakit sistem saraf. Kemajuan teknologi medis memungkinkan diagnosis yang lebih akurat dan terapi yang lebih efektif.
+                        </p>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg mt-3">
+                            <h3 class="font-bold text-yellow-800">1. Diagnosis</h3>
+                            <p class="text-sm mt-1">MRI, CT scan, dan EEG digunakan untuk memvisualisasikan struktur dan fungsi otak serta sistem saraf.</p>
+                        </div>
+                        
+                        <div class="bg-yellow-100 p-4 rounded-lg mt-3">
+                            <h3 class="font-bold text-yellow-800">2. Terapi Obat</h3>
+                            <p class="text-sm mt-1">Obat-obatan untuk mengontrol gejala seperti antiepileptik, dopaminergik, dan antidepresan.</p>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg mt-3">
+                            <h3 class="font-bold text-yellow-800">3. Terapi Bedah</h3>
+                            <p class="text-sm mt-1">Intervensi bedah seperti stimulasi otak dalam (DBS) dan reseksi tumor untuk penyakit neurologis.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="article-section">
+                        <h2 class="section-title"><i class="fas fa-lightbulb"></i> Tips Mempelajari Neurologi</h2>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mt-3">
+                            <h3 class="font-bold text-yellow-800 flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i> Mulai dari Anatomi
+                            </h3>
+                            <p class="text-sm mt-1">Pelajari struktur otak dan sistem saraf sebelum memahami fungsinya.</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mt-3">
+                            <h3 class="font-bold text-yellow-800 flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i> Gunakan Visualisasi
+                            </h3>
+                            <p class="text-sm mt-1">Gunakan model 3D dan gambar MRI untuk memahami struktur otak.</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mt-3">
+                            <h3 class="font-bold text-yellow-800 flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i> Latih dengan Kasus
+                            </h3>
+                            <p class="text-sm mt-1">Pelajari kasus klinis untuk memahami manifestasi penyakit neurologis.</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mt-3">
+                            <h3 class="font-bold text-yellow-800 flex items-center">
+                                <i class="fas fa-check-circle mr-2"></i> Hubungkan dengan Klinis
+                            </h3>
+                            <p class="text-sm mt-1">Pahami bagaimana konsep dasar neurologi diterapkan dalam praktik klinis.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav bg-white p-2 flex justify-around items-center">
+            <a href="../index2.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-home nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Beranda</span>
+            </a>
+            <a href="../kategori/kategori soal.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-flask nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Soal Harian</span>
+            </a>
+            <a href="../ai/index.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-robot nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Nayra AI</span>
+            </a>
+            <a href="../kategori/kategori materi.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-chalkboard-teacher nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Materi Harian</span>
+            </a>
+            <a href="../profil.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-user nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Profil</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Bottom nav interaction
+            const navItems = document.querySelectorAll('.nav-icon');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    navItems.forEach(nav => {
+                        nav.classList.remove('active');
+                        nav.parentElement.classList.remove('text-primary');
+                        nav.parentElement.classList.add('text-gray-500');
+                    });
+                    
+                    this.classList.add('active');
+                    this.parentElement.classList.add('text-primary');
+                    this.parentElement.classList.remove('text-gray-500');
+                });
+            });
+            
+            // Set current page as active
+            document.querySelector('.bottom-nav a[href="kategori materi.html"] i').classList.add('active');
+            document.querySelector('.bottom-nav a[href="kategori materi.html"]').classList.add('text-primary');
+            document.querySelector('.bottom-nav a[href="kategori materi.html"]').classList.remove('text-gray-500');
+        });
+    </script>
+</body>
+</html>
