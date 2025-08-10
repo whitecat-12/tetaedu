@@ -308,49 +308,48 @@
         <main class="pb-20 islamic-pattern">
             <!-- Calculator Section -->
             <section class="calculator">
-                <h3>Physics Calculator</h3>
-                <div class="calculator-inputs grid grid-cols-2 gap-4">
+				<h3>Kalkulator Fisika</h3>
+				<div class="calculator-inputs grid grid-cols-2 gap-4">
 					<div class="input-group">
-						<label for="mass">Mass (kg)</label>
-						<input type="number" id="mass" placeholder="Enter mass">
+						<label for="mass">Massa (kg)</label>
+						<input type="number" id="mass" placeholder="Masukkan massa">
 					</div>
 					<div class="input-group">
-						<label for="velocity">Velocity (m/s)</label>
-						<input type="number" id="velocity" placeholder="Enter velocity">
+						<label for="velocity">Kecepatan (m/s)</label>
+						<input type="number" id="velocity" placeholder="Masukkan kecepatan">
 					</div>
 					<div class="input-group">
-						<label for="distance">Distance (m)</label>
-						<input type="number" id="distance" placeholder="Enter distance">
+						<label for="distance">Jarak (m)</label>
+						<input type="number" id="distance" placeholder="Masukkan jarak">
 					</div>
 					<div class="input-group">
-						<label for="time">Time (s)</label>
-						<input type="number" id="time" placeholder="Enter time">
+						<label for="time">Waktu (s)</label>
+						<input type="number" id="time" placeholder="Masukkan waktu">
 					</div>
 				</div>
 
+				<div class="calculator-buttons">
+					<button class="calc-btn" onclick="calculateKineticEnergy()">Energi Kinetik</button>
+					<button class="calc-btn" onclick="calculateVelocity()">Kecepatan</button>
+					<button class="calc-btn" onclick="calculateForce()">Gaya</button>
+					<button class="calc-btn" onclick="calculateWork()">Usaha</button>
+				</div>
+				<div class="result" id="calcResult"></div>
+			</section>
 
-                <div class="calculator-buttons">
-                    <button class="calc-btn" onclick="calculateKineticEnergy()">Kinetic Energy</button>
-                    <button class="calc-btn" onclick="calculateVelocity()">Velocity</button>
-                    <button class="calc-btn" onclick="calculateForce()">Force</button>
-                    <button class="calc-btn" onclick="calculateWork()">Work Done</button>
-                </div>
-                <div class="result" id="calcResult"></div>
-            </section>
-            
-            <!-- Page Title -->
-            <section class="p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Science Question Categories</h2>
-                        <p class="text-sm text-gray-600">Select a category to test your science knowledge</p>
-                    </div>
-                    <div class="bg-primary/10 text-primary p-3 rounded-full">
-                        <i class="fas fa-question-circle text-xl"></i>
-                    </div>
-                </div>
-            </section>
-            
+			<!-- Judul Halaman -->
+			<section class="p-4">
+				<div class="flex items-center justify-between">
+					<div>
+						<h2 class="text-2xl font-bold text-gray-800">Kategori Pertanyaan Sains</h2>
+						<p class="text-sm text-gray-600">Pilih kategori untuk menguji pengetahuan sains Anda</p>
+					</div>
+					<div class="bg-primary/10 text-primary p-3 rounded-full">
+						<i class="fas fa-question-circle text-xl"></i>
+					</div>
+				</div>
+			</section>
+          
             <!-- Question Categories -->
             <section class="p-4">
                 <!-- Electrodynamics Questions -->
