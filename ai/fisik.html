@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nayra - AI Pintar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+    }
+
+    video {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 100vw;
+      max-height: 100vh;
+      width: auto;
+      height: auto;
+      background: black;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    video.show {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .overlay {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .mic-button {
+      background: linear-gradient(to bottom right, #00ff9d, #00c76d);
+      color: white;
+      border: none;
+      padding: 1.2rem;
+      width: 120px;
+      height: 120px;
+      font-size: 1rem;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 255, 127, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .mic-button i {
+      font-size: 1.8rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .mic-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(0, 255, 127, 0.9);
+    }
+
+    .cancel-button {
+      background: linear-gradient(to bottom right, #ff4d4d, #a00000);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+
+    .cancel-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(255, 0, 0, 0.9);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Video Idle -->
+<video id="idle" class="show" autoplay muted loop playsinline>
+  <source src="media/idle.mp4" type="video/mp4" />
+</video>
+
+<!-- Video Avatar (bicara) -->
+<video id="avatar" muted loop playsinline>
+  <source src="media/avatar.mp4" type="video/mp4" />
+</video>
+
+<!-- Video Dance (separate file) -->
+<video id="dance" muted playsinline>
+  <source src="media/dance.mp4" type="video/mp4" />
+</video>
+
+
+<!-- Tombol UI -->
+<div class="overlay">
+  <button id="micButton" class="mic-button">
+    <i class="fas fa-microphone"></i>
+    Bicara
+  </button>
+  <button id="cancelButton" class="mic-button cancel-button">
+    <i class="fas fa-times"></i>
+    Batal
+  </button>
+  <button id="resetButton" class="mic-button cancel-button">
+    <i class="fas fa-rotate-left"></i>
+    Reset
+  </button>
+</div>
+
+</div>
+
+<script>
+const GROQ_KEYS = [
+  "Bearer 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", // API KEY 1
+  "Bearer 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"  // API KEY 2
+];
+
+const idle = document.getElementById("idle");
+const avatar = document.getElementById("avatar");
+const dance = document.getElementById("dance");
+
+let recognition = null;
+let ucap = null;
+let history = ambilRiwayat();
+
+// ====== LocalStorage ======
+function getNamaPengguna() {
+  return localStorage.getItem("namaPengguna") || null;
+}
+
+function setNamaPengguna(nama) {
+  localStorage.setItem("namaPengguna", nama);
+}
+
+function simpanRiwayat() {
+  localStorage.setItem("riwayatChat", JSON.stringify(history));
+}
+
+function ambilRiwayat() {
+  const data = localStorage.getItem("riwayatChat");
+  return data ? JSON.parse(data) : [];
+}
+
+function hapusRiwayat() {
+  localStorage.removeItem("riwayatChat");
+  history = [];
+}
+
+// ====== Tampilan dan Kontrol ======
+function show(video) {
+  idle.classList.remove("show");
+  avatar.classList.remove("show");
+  dance.classList.remove("show");
+  video.classList.add("show");
+}
+
+function bersihkanMarkdown(teks) {
+  return teks.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1');
+}
+
+// ====== Speech dan AI ======
+async function mulaiRekam() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert("Perangkat tidak mendukung speech recognition.");
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = 'id-ID';
+  recognition.interimResults = false;
+
+  recognition.onresult = async function(event) {
+    const teks = event.results[0][0].transcript.trim();
+    recognition.stop();
+    recognition = null;
+
+    if (/dance|nari|menari/i.test(teks)) {
+      mulaiDance();
+      return;
+    }
+
+    const regexNama = /nama(?:ku| saya)?(?: adalah)? ([a-zA-Z]+)/i;
+    const match = teks.match(regexNama);
+    if (match) {
+      const nama = match[1];
+      setNamaPengguna(nama);
+      bicara(`Hai ${nama}, senang bertemu denganmu!`);
+      return;
+    }
+
+    const jawaban = await tanyaAI(teks);
+    bicara(bersihkanMarkdown(jawaban));
+  };
+
+  recognition.onerror = function(event) {
+    console.error("Error:", event.error);
+    recognition.stop();
+    recognition = null;
+  };
+
+  recognition.start();
+}
+
+async function cobaGroqDenganBanyakKey(body) {
+  for (const key of GROQ_KEYS) {
+    try {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": key,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.warn("Gagal dengan key:", key, err.error?.message);
+        continue;
+      }
+
+      return await res.json();
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
+  }
+
+  return { error: { message: "Semua API gagal dihubungi." } };
+}
+
+async function tanyaAI(teks) {
+  const nama = getNamaPengguna();
+  const systemPrompt = `Kamu adalah Nayra AI, asisten pintar dari teta.education. ${
+    nama ? `Nama pengguna adalah ${nama}.` : ""
+  } Kamu memiliki tubuh virtual yang dapat dilihat oleh pengguna dalam bentuk 3d model. Kamu bisa berbicara, menari, dan melakukan gerakan tertentu. Jawablah dengan ramah, sopan, dan mudah dimengerti oleh pengguna dari Indonesia.`;
+
+  history.push({ role: "user", content: teks });
+
+  const body = {
+    model: "llama3-8b-8192",
+    messages: [{ role: "system", content: systemPrompt }, ...history],
+    temperature: 0.7
+  };
+
+  const data = await cobaGroqDenganBanyakKey(body);
+
+  if (data.error) {
+    return "⚠️ Error: " + data.error.message;
+  }
+
+  const reply = data.choices?.[0]?.message?.content || "Maaf, tidak ada jawaban.";
+  history.push({ role: "assistant", content: reply });
+  simpanRiwayat();
+
+  return reply;
+}
+
+// ====== Video & Suara ======
+function mulaiDance() {
+  show(dance);
+  dance.currentTime = 0;
+  dance.play().catch(err => console.warn("Video dance gagal:", err));
+  dance.onended = () => show(idle);
+}
+
+function bicara(teks) {
+  show(avatar);
+  avatar.currentTime = 0;
+  avatar.play().catch(err => console.warn("Video gagal:", err));
+
+  ucap = new SpeechSynthesisUtterance(teks);
+  ucap.lang = "id-ID";
+  speechSynthesis.speak(ucap);
+
+  ucap.onend = () => {
+    avatar.pause();
+    show(idle);
+    ucap = null;
+  };
+}
+
+function cancelSemua() {
+  if (recognition) recognition.abort();
+  if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+
+  idle.pause(); avatar.pause(); dance.pause();
+  show(idle);
+  idle.currentTime = 0;
+  idle.play().catch(err => console.warn("Idle gagal jalan:", err));
+}
+
+function resetKonteks() {
+  hapusRiwayat();
+  bicara("Konteks telah dihapus. Kita bisa mulai percakapan baru.");
+}
+
+// ====== Tombol ======
+document.getElementById("micButton").onclick = mulaiRekam;
+document.getElementById("cancelButton").onclick = cancelSemua;
+document.getElementById("resetButton")?.addEventListener("click", resetKonteks);
+</script>
+
+
+</body>
+</html>
