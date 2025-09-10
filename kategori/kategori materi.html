@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Virtual Hukum Newton - TETA SAINS</title>
+    <title>TETA SAINS - Simulasi Atom</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <style>
         :root {
             --primary: #38b2ac;
@@ -33,53 +33,49 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         
-        .simulation-container {
+        #atom-container {
             width: 100%;
             height: 300px;
+            background-color: #000;
             position: relative;
         }
         
-        #physics-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        
-        .controls-panel {
+        .simulation-controls {
             padding: 15px;
-            background: #f1f5f9;
-            border-radius: 12px;
+            background-color: #f1f5f9;
+            border-radius: 10px;
             margin: 15px;
         }
         
-        .slider-container {
+        .control-group {
             margin-bottom: 15px;
         }
         
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
+        .control-label {
+            display: block;
             margin-bottom: 5px;
-            font-size: 14px;
+            font-weight: 600;
             color: #374151;
         }
         
-        .slider-value {
-            font-weight: bold;
-            color: var(--primary);
+        .slider-container {
+            display: flex;
+            align-items: center;
         }
         
-        input[type="range"] {
-            width: 100%;
+        .slider {
+            flex: 1;
             height: 5px;
             -webkit-appearance: none;
-            background: #cbd5e1;
-            border-radius: 5px;
+            appearance: none;
+            background: #d1d5db;
             outline: none;
+            border-radius: 5px;
         }
         
-        input[type="range"]::-webkit-slider-thumb {
+        .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
+            appearance: none;
             width: 18px;
             height: 18px;
             border-radius: 50%;
@@ -87,75 +83,119 @@
             cursor: pointer;
         }
         
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
+        .slider-value {
+            margin-left: 10px;
+            min-width: 30px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
         }
         
-        .btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
+        .atom-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .atom-option {
+            padding: 8px 5px;
+            text-align: center;
+            background: white;
+            border: 2px solid #e5e7eb;
             border-radius: 8px;
-            font-family: 'Baloo 2', cursive;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .atom-option:hover, .atom-option.active {
+            border-color: var(--primary);
+            background-color: #f0fdfa;
+            color: var(--primary);
+        }
+        
+        .info-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .info-title {
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-title i {
+            margin-right: 8px;
+        }
+        
+        .info-content {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #4b5563;
+        }
+        
+        .info-property {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .info-property:last-child {
+            border-bottom: none;
+        }
+        
+        .property-name {
+            color: #6b7280;
+        }
+        
+        .property-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+        }
+        
+        .nav-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
         
-        .btn-primary {
-            background: var(--primary);
-            color: white;
+        .nav-button:hover {
+            background: var(--secondary);
         }
         
-        .btn-secondary {
+        .nav-button i {
+            margin-right: 8px;
+        }
+        
+        .nav-button.secondary {
             background: #e5e7eb;
-            color: #374151;
+            color: #4b5563;
         }
         
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        
-        .data-display {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        
-        .data-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        
-        .data-value {
-            font-weight: bold;
-            color: var(--primary);
-        }
-        
-        .theory-section {
-            background: #f8fafc;
-            padding: 15px;
-            margin: 15px;
-            border-radius: 12px;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .theory-section h3 {
-            margin-top: 0;
-            color: var(--secondary);
-        }
-        
-        .theory-section p {
-            font-size: 14px;
-            line-height: 1.5;
-            color: #374151;
+        .nav-button.secondary:hover {
+            background: #d1d5db;
         }
     </style>
 </head>
@@ -184,88 +224,97 @@
             <section class="p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Lab Virtual Hukum Newton</h2>
-                        <p class="text-sm text-gray-600">Eksperimen interaktif dengan gaya dan gerak</p>
+                        <h2 class="text-2xl font-bold text-gray-800">Simulasi Atom</h2>
+                        <p class="text-sm text-gray-600">Eksplorasi struktur atom secara interaktif</p>
                     </div>
                     <div class="bg-primary/10 text-primary p-3 rounded-full">
-                        <i class="fas fa-weight-hanging text-xl"></i>
+                        <i class="fas fa-atom text-xl"></i>
                     </div>
                 </div>
             </section>
             
-            <!-- Simulation Canvas -->
-            <section class="simulation-container">
-                <canvas id="physics-canvas"></canvas>
-            </section>
+            <!-- Atom Simulation Container -->
+            <div id="atom-container"></div>
             
-            <!-- Controls Panel -->
-            <section class="controls-panel">
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Gaya (N)</span>
-                        <span class="slider-value" id="force-value">10</span>
+            <!-- Simulation Controls -->
+            <div class="simulation-controls">
+                <div class="control-group">
+                    <label class="control-label">Jenis Atom</label>
+                    <div class="atom-selector">
+                        <div class="atom-option active" data-atom="hydrogen">Hidrogen</div>
+                        <div class="atom-option" data-atom="helium">Helium</div>
+                        <div class="atom-option" data-atom="lithium">Lithium</div>
+                        <div class="atom-option" data-atom="carbon">Karbon</div>
+                        <div class="atom-option" data-atom="oxygen">Oksigen</div>
+                        <div class="atom-option" data-atom="neon">Neon</div>
                     </div>
-                    <input type="range" id="force-slider" min="0" max="50" value="10">
                 </div>
                 
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Massa (kg)</span>
-                        <span class="slider-value" id="mass-value">5</span>
+                <div class="control-group">
+                    <label class="control-label">Kecepatan Rotasi</label>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="100" value="30" class="slider" id="rotation-speed">
+                        <span class="slider-value" id="rotation-value">30</span>
                     </div>
-                    <input type="range" id="mass-slider" min="1" max="20" value="5">
                 </div>
                 
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Gesekan</span>
-                        <span class="slider-value" id="friction-value">0.2</span>
+                <div class="control-group">
+                    <label class="control-label">Ukuran Inti Atom</label>
+                    <div class="slider-container">
+                        <input type="range" min="5" max="20" value="10" class="slider" id="nucleus-size">
+                        <span class="slider-value" id="nucleus-value">10</span>
                     </div>
-                    <input type="range" id="friction-slider" min="0" max="10" value="2" step="0.1">
                 </div>
                 
-                <div class="button-group">
-                    <button class="btn btn-primary" id="start-btn">
-                        <i class="fas fa-play mr-2"></i>Mulai
-                    </button>
-                    <button class="btn btn-secondary" id="reset-btn">
-                        <i class="fas fa-redo mr-2"></i>Reset
-                    </button>
+                <div class="control-group">
+                    <label class="control-label">Jarak Orbit Elektron</label>
+                    <div class="slider-container">
+                        <input type="range" min="20" max="60" value="40" class="slider" id="orbit-distance">
+                        <span class="slider-value" id="orbit-value">40</span>
+                    </div>
                 </div>
-            </section>
+            </div>
             
-            <!-- Data Display -->
-            <section class="data-display">
-                <h3 class="font-bold text-gray-800 mb-3">Data Eksperimen</h3>
-                
-                <div class="data-item">
-                    <span>Percepatan (m/s²)</span>
-                    <span class="data-value" id="acceleration-value">0.00</span>
+            <!-- Information Panel -->
+            <div class="info-panel">
+                <h3 class="info-title"><i class="fas fa-info-circle"></i> Informasi Atom Hidrogen</h3>
+                <div class="info-content">
+                    <div class="info-property">
+                        <span class="property-name">Nomor Atom:</span>
+                        <span class="property-value">1</span>
+                    </div>
+                    <div class="info-property">
+                        <span class="property-name">Massa Atom:</span>
+                        <span class="property-value">1,008 u</span>
+                    </div>
+                    <div class="info-property">
+                        <span class="property-name">Konfigurasi Elektron:</span>
+                        <span class="property-value">1s¹</span>
+                    </div>
+                    <div class="info-property">
+                        <span class="property-name">Jumlah Elektron:</span>
+                        <span class="property-value">1</span>
+                    </div>
+                    <div class="info-property">
+                        <span class="property-name">Jumlah Proton:</span>
+                        <span class="property-value">1</span>
+                    </div>
+                    <div class="info-property">
+                        <span class="property-name">Jumlah Neutron:</span>
+                        <span class="property-value">0</span>
+                    </div>
                 </div>
-                
-                <div class="data-item">
-                    <span>Kecepatan (m/s)</span>
-                    <span class="data-value" id="velocity-value">0.00</span>
-                </div>
-                
-                <div class="data-item">
-                    <span>Jarak (m)</span>
-                    <span class="data-value" id="distance-value">0.00</span>
-                </div>
-                
-                <div class="data-item">
-                    <span>Waktu (s)</span>
-                    <span class="data-value" id="time-value">0.00</span>
-                </div>
-            </section>
+            </div>
             
-            <!-- Theory Section -->
-            <section class="theory-section">
-                <h3 class="font-bold">Hukum II Newton</h3>
-                <p>Hukum II Newton menyatakan bahwa percepatan sebuah benda berbanding lurus dengan gaya total yang bekerja padanya dan berbanding terbalik dengan massanya. Arah percepatan sama dengan arah gaya total yang bekerja padanya.</p>
-                <p class="mt-2 font-mono">∑F = m × a</p>
-                <p class="mt-2">Dimana: ∑F = gaya total (N), m = massa (kg), a = percepatan (m/s²)</p>
-            </section>
+            <!-- Navigation Buttons -->
+            <div class="navigation-buttons">
+                <div class="nav-button secondary">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </div>
+                <div class="nav-button">
+                    <i class="fas fa-flask"></i> Mulai Eksperimen
+                </div>
+            </div>
         </main>
         
         <!-- Bottom Navigation -->
@@ -294,35 +343,86 @@
     </div>
 
     <script>
-        // Variables for physics simulation
+        // Data atom
+        const atoms = {
+            hydrogen: {
+                name: "Hidrogen",
+                protons: 1,
+                neutrons: 0,
+                electrons: 1,
+                electronConfiguration: [1],
+                atomicNumber: 1,
+                atomicMass: "1.008"
+            },
+            helium: {
+                name: "Helium",
+                protons: 2,
+                neutrons: 2,
+                electrons: 2,
+                electronConfiguration: [2],
+                atomicNumber: 2,
+                atomicMass: "4.0026"
+            },
+            lithium: {
+                name: "Lithium",
+                protons: 3,
+                neutrons: 4,
+                electrons: 3,
+                electronConfiguration: [2, 1],
+                atomicNumber: 3,
+                atomicMass: "6.94"
+            },
+            carbon: {
+                name: "Karbon",
+                protons: 6,
+                neutrons: 6,
+                electrons: 6,
+                electronConfiguration: [2, 4],
+                atomicNumber: 6,
+                atomicMass: "12.011"
+            },
+            oxygen: {
+                name: "Oksigen",
+                protons: 8,
+                neutrons: 8,
+                electrons: 8,
+                electronConfiguration: [2, 6],
+                atomicNumber: 8,
+                atomicMass: "15.999"
+            },
+            neon: {
+                name: "Neon",
+                protons: 10,
+                neutrons: 10,
+                electrons: 10,
+                electronConfiguration: [2, 8],
+                atomicNumber: 10,
+                atomicMass: "20.180"
+            }
+        };
+
+        // Three.js variables
         let scene, camera, renderer, controls;
-        let cube, plane;
-        let force = 10; // in Newtons
-        let mass = 5;   // in kg
-        let friction = 0.2; // friction coefficient
-        let acceleration = 0;
-        let velocity = 0;
-        let distance = 0;
-        let time = 0;
-        let isSimulating = false;
-        let clock = new THREE.Clock();
-        
+        let nucleus, electrons = [], electronOrbits = [];
+        let currentAtom = 'hydrogen';
+        let rotationSpeed = 0.03;
+        let nucleusSize = 10;
+        let orbitDistance = 40;
+
         // Initialize Three.js scene
         function init() {
             // Create scene
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xf0f9ff);
+            scene.background = new THREE.Color(0x0a0a1a);
             
-            // Setup camera
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 5, 10);
-            camera.lookAt(0, 0, 0);
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / 300, 0.1, 1000);
+            camera.position.z = 100;
             
-            // Setup renderer
-            const canvas = document.getElementById('physics-canvas');
-            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, 300);
+            document.getElementById('atom-container').appendChild(renderer.domElement);
             
             // Add orbit controls
             controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -330,164 +430,231 @@
             controls.dampingFactor = 0.05;
             
             // Add lights
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            const ambientLight = new THREE.AmbientLight(0x404040);
             scene.add(ambientLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 10, 7);
-            scene.add(directionalLight);
+            const light1 = new THREE.DirectionalLight(0xffffff, 1);
+            light1.position.set(1, 1, 1);
+            scene.add(light1);
             
-            // Create ground plane
-            const planeGeometry = new THREE.PlaneGeometry(20, 10);
-            const planeMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x90caf9,
-                roughness: 0.8,
-                metalness: 0.2
-            });
-            plane = new THREE.Mesh(planeGeometry, planeMaterial);
-            plane.rotation.x = -Math.PI / 2;
-            plane.position.y = -1;
-            scene.add(plane);
+            const light2 = new THREE.DirectionalLight(0xffffff, 0.75);
+            light2.position.set(-1, -1, -1);
+            scene.add(light2);
             
-            // Create a cube to represent the object
-            const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-            const cubeMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x38b2ac,
-                roughness: 0.7,
-                metalness: 0.3
-            });
-            cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-            cube.position.set(-8, 0, 0);
-            scene.add(cube);
-            
-            // Add grid helper
-            const gridHelper = new THREE.GridHelper(20, 20, 0x000000, 0x000000);
-            gridHelper.position.y = -0.99;
-            gridHelper.material.opacity = 0.2;
-            gridHelper.material.transparent = true;
-            scene.add(gridHelper);
-            
-            // Add axes helper
-            const axesHelper = new THREE.AxesHelper(5);
-            scene.add(axesHelper);
+            // Create atom
+            createAtom(currentAtom);
             
             // Handle window resize
             window.addEventListener('resize', onWindowResize);
             
-            // Start animation loop
+            // Start animation
             animate();
         }
         
-        function onWindowResize() {
-            const canvas = document.getElementById('physics-canvas');
-            camera.aspect = canvas.clientWidth / canvas.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        // Create atom structure
+        function createAtom(atomType) {
+            // Clear previous atom
+            if (nucleus) scene.remove(nucleus);
+            electrons.forEach(e => scene.remove(e));
+            electronOrbits.forEach(o => scene.remove(o));
+            electrons = [];
+            electronOrbits = [];
+            
+            const atom = atoms[atomType];
+            
+            // Create nucleus (protons and neutrons)
+            const nucleusGeometry = new THREE.SphereGeometry(nucleusSize, 32, 32);
+            const nucleusMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff5252,
+                emissive: 0x8b0000,
+                specular: 0xff5252,
+                shininess: 30
+            });
+            nucleus = new THREE.Mesh(nucleusGeometry, nucleusMaterial);
+            scene.add(nucleus);
+            
+            // Add particles inside nucleus to represent protons and neutrons
+            const particleCount = atom.protons + atom.neutrons;
+            for (let i = 0; i < particleCount; i++) {
+                const radius = nucleusSize * 0.7;
+                const phi = Math.acos(-1 + (2 * i) / particleCount);
+                const theta = Math.sqrt(particleCount * Math.PI) * phi;
+                
+                const x = radius * Math.cos(theta) * Math.sin(phi);
+                const y = radius * Math.sin(theta) * Math.sin(phi);
+                const z = radius * Math.cos(phi);
+                
+                const particleSize = i < atom.protons ? 2 : 1.8;
+                const particleColor = i < atom.protons ? 0x3498db : 0x95a5a6;
+                
+                const particleGeometry = new THREE.SphereGeometry(particleSize, 16, 16);
+                const particleMaterial = new THREE.MeshPhongMaterial({ color: particleColor });
+                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                
+                particle.position.set(x, y, z);
+                nucleus.add(particle);
+            }
+            
+            // Create electrons and orbits based on electron configuration
+            let totalElectronsCreated = 0;
+            
+            for (let shell = 0; shell < atom.electronConfiguration.length; shell++) {
+                const electronsInShell = atom.electronConfiguration[shell];
+                const radius = orbitDistance + (shell * 15);
+                
+                // Create orbit circle
+                const orbitGeometry = new THREE.RingGeometry(radius - 0.5, radius + 0.5, 64);
+                const orbitMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0x4a5568, 
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+                orbit.rotation.x = Math.PI / 2;
+                scene.add(orbit);
+                electronOrbits.push(orbit);
+                
+                // Create electrons for this shell
+                for (let i = 0; i < electronsInShell; i++) {
+                    const angle = (i / electronsInShell) * Math.PI * 2;
+                    
+                    const electronGeometry = new THREE.SphereGeometry(3, 16, 16);
+                    const electronMaterial = new THREE.MeshPhongMaterial({
+                        color: 0xf1c40f,
+                        emissive: 0xf39c12,
+                        specular: 0xf1c40f,
+                        shininess: 30
+                    });
+                    const electron = new THREE.Mesh(electronGeometry, electronMaterial);
+                    
+                    // Position electron on orbit
+                    electron.position.x = radius * Math.cos(angle);
+                    electron.position.y = radius * Math.sin(angle);
+                    
+                    // Add some random offset for more natural look
+                    electron.userData.angle = angle;
+                    electron.userData.radius = radius;
+                    electron.userData.speed = 0.5 + Math.random() * 0.5;
+                    electron.userData.offset = Math.random() * Math.PI * 2;
+                    
+                    scene.add(electron);
+                    electrons.push(electron);
+                    totalElectronsCreated++;
+                }
+            }
+            
+            // Update information panel
+            updateAtomInfo(atom);
         }
         
+        // Update atom information panel
+        function updateAtomInfo(atom) {
+            document.querySelector('.info-title').innerHTML = 
+                `<i class="fas fa-info-circle"></i> Informasi Atom ${atom.name}`;
+            
+            const infoContent = document.querySelector('.info-content');
+            infoContent.innerHTML = `
+                <div class="info-property">
+                    <span class="property-name">Nomor Atom:</span>
+                    <span class="property-value">${atom.atomicNumber}</span>
+                </div>
+                <div class="info-property">
+                    <span class="property-name">Massa Atom:</span>
+                    <span class="property-value">${atom.atomicMass} u</span>
+                </div>
+                <div class="info-property">
+                    <span class="property-name">Konfigurasi Elektron:</span>
+                    <span class="property-value">${getElectronConfigString(atom.electronConfiguration)}</span>
+                </div>
+                <div class="info-property">
+                    <span class="property-name">Jumlah Elektron:</span>
+                    <span class="property-value">${atom.electrons}</span>
+                </div>
+                <div class="info-property">
+                    <span class="property-name">Jumlah Proton:</span>
+                    <span class="property-value">${atom.protons}</span>
+                </div>
+                <div class="info-property">
+                    <span class="property-name">Jumlah Neutron:</span>
+                    <span class="property-value">${atom.neutrons}</span>
+                </div>
+            `;
+        }
+        
+        // Format electron configuration as string
+        function getElectronConfigString(config) {
+            return config.map((electrons, index) => `${index + 1}s${electrons > 2 ? '²' : '¹'}`).join(' ');
+        }
+        
+        // Animation loop
         function animate() {
             requestAnimationFrame(animate);
             
-            const delta = clock.getDelta();
-            
-            if (isSimulating) {
-                time += delta;
-                
-                // Calculate physics based on Newton's second law: F = m * a
-                const netForce = force - (friction * mass * 9.8); // F_net = applied force - friction
-                acceleration = netForce / mass;
-                
-                // Update velocity and position
-                velocity += acceleration * delta;
-                cube.position.x += velocity * delta;
-                
-                // Update distance
-                distance = Math.max(0, cube.position.x + 8);
-                
-                // Update UI values
-                document.getElementById('acceleration-value').textContent = acceleration.toFixed(2);
-                document.getElementById('velocity-value').textContent = velocity.toFixed(2);
-                document.getElementById('distance-value').textContent = distance.toFixed(2);
-                document.getElementById('time-value').textContent = time.toFixed(2);
-                
-                // Stop simulation if cube goes out of bounds
-                if (cube.position.x > 8) {
-                    isSimulating = false;
-                }
+            // Rotate nucleus
+            if (nucleus) {
+                nucleus.rotation.x += rotationSpeed * 0.1;
+                nucleus.rotation.y += rotationSpeed * 0.2;
             }
+            
+            // Move electrons
+            const time = Date.now() * 0.001;
+            electrons.forEach(electron => {
+                electron.position.x = electron.userData.radius * Math.cos(electron.userData.angle + time * electron.userData.speed);
+                electron.position.y = electron.userData.radius * Math.sin(electron.userData.angle + time * electron.userData.speed);
+                electron.position.z = Math.sin(time * electron.userData.speed + electron.userData.offset) * 5;
+            });
             
             controls.update();
             renderer.render(scene, camera);
         }
         
-        // Initialize sliders and buttons
+        // Handle window resize
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / 300;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, 300);
+        }
+        
+        // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Three.js
             init();
             
-            // Setup force slider
-            const forceSlider = document.getElementById('force-slider');
-            const forceValue = document.getElementById('force-value');
-            
-            forceSlider.addEventListener('input', function() {
-                force = parseInt(this.value);
-                forceValue.textContent = force;
+            // Set up event listeners for controls
+            document.getElementById('rotation-speed').addEventListener('input', function(e) {
+                rotationSpeed = e.target.value / 100;
+                document.getElementById('rotation-value').textContent = e.target.value;
             });
             
-            // Setup mass slider
-            const massSlider = document.getElementById('mass-slider');
-            const massValue = document.getElementById('mass-value');
-            
-            massSlider.addEventListener('input', function() {
-                mass = parseInt(this.value);
-                massValue.textContent = mass;
+            document.getElementById('nucleus-size').addEventListener('input', function(e) {
+                nucleusSize = parseInt(e.target.value);
+                document.getElementById('nucleus-value').textContent = e.target.value;
+                createAtom(currentAtom);
             });
             
-            // Setup friction slider
-            const frictionSlider = document.getElementById('friction-slider');
-            const frictionValue = document.getElementById('friction-value');
-            
-            frictionSlider.addEventListener('input', function() {
-                friction = parseFloat(this.value) / 10;
-                frictionValue.textContent = friction.toFixed(1);
+            document.getElementById('orbit-distance').addEventListener('input', function(e) {
+                orbitDistance = parseInt(e.target.value);
+                document.getElementById('orbit-value').textContent = e.target.value;
+                createAtom(currentAtom);
             });
             
-            // Start button
-            document.getElementById('start-btn').addEventListener('click', function() {
-                isSimulating = true;
-                clock.start();
-            });
-            
-            // Reset button
-            document.getElementById('reset-btn').addEventListener('click', function() {
-                isSimulating = false;
-                cube.position.x = -8;
-                velocity = 0;
-                acceleration = 0;
-                distance = 0;
-                time = 0;
-                
-                // Reset UI values
-                document.getElementById('acceleration-value').textContent = '0.00';
-                document.getElementById('velocity-value').textContent = '0.00';
-                document.getElementById('distance-value').textContent = '0.00';
-                document.getElementById('time-value').textContent = '0.00';
-            });
-            
-            // Bottom nav interaction
-            const navItems = document.querySelectorAll('.nav-icon');
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    navItems.forEach(nav => {
-                        nav.classList.remove('active');
-                        nav.parentElement.classList.remove('text-primary');
-                        nav.parentElement.classList.add('text-gray-500');
-                    });
-                    
+            // Set up atom selector
+            document.querySelectorAll('.atom-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.atom-option').forEach(opt => opt.classList.remove('active'));
                     this.classList.add('active');
-                    this.parentElement.classList.add('text-primary');
-                    this.parentElement.classList.remove('text-gray-500');
+                    currentAtom = this.getAttribute('data-atom');
+                    createAtom(currentAtom);
                 });
+            });
+            
+            // Navigation buttons
+            document.querySelector('.nav-button.secondary').addEventListener('click', function() {
+                alert('Kembali ke halaman sebelumnya');
+            });
+            
+            document.querySelector('.nav-button:not(.secondary)').addEventListener('click', function() {
+                alert('Memulai eksperimen dengan atom ' + atoms[currentAtom].name);
             });
         });
     </script>
