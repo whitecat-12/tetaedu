@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TETA SAINS - Profil Nayla Yuva</title>
+    <title>TETA SAINS - Lab Virtual Fisika</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -75,116 +75,125 @@
             -webkit-text-fill-color: transparent;
         }
         
-        .profile-header {
-            background: linear-gradient(135deg, #38b2ac, #0e7490);
-            padding: 20px;
-            color: white;
-            text-align: center;
+        .lab-category {
+            transition: all 0.3s ease;
+            border-left: 4px solid;
             position: relative;
-        }
-        
-        .profile-pic {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid white;
-            margin: 0 auto;
             overflow: hidden;
-            background: #f0fdfa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: #0e7490;
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin: 5px;
-        }
-        
-        .badge-primary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-        
-        .stats-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #6b7280;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            background-color: #e5e7eb;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            background: linear-gradient(135deg, #38b2ac, #0e7490);
-        }
-        
-        .achievement-card {
-            display: flex;
-            align-items: center;
-            padding: 12px;
             border-radius: 12px;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 10px;
         }
         
-        .achievement-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+        .lab-category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        
+        .lab-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .lab-category:hover .lab-icon {
+            transform: scale(1.1);
+        }
+        
+        .level-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .pemula {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+        
+        .menengah {
+            background-color: #fffbeb;
+            color: #d97706;
+        }
+        
+        .mahir {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .new-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ef4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .lab-tip {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .duration-badge {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .simulation-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
-            font-size: 18px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         
-        .menu-item {
+        .simulation-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(56, 178, 172, 0.8), rgba(14, 116, 144, 0.8));
             display: flex;
+            flex-direction: column;
             align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid #f3f4f6;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         
-        .menu-icon {
-            width: 40px;
-            height: 40px;
+        .simulation-card:hover .simulation-overlay {
+            opacity: 1;
+        }
+        
+        .play-button {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
-            background: #f0fdfa;
             color: var(--primary);
+            font-size: 20px;
+            margin-bottom: 8px;
         }
     </style>
 </head>
@@ -202,195 +211,215 @@
                 </div>
                 <div class="flex items-center space-x-3">
                     <i class="fas fa-bell"></i>
+                    <i class="fas fa-user-circle text-xl"></i>
                 </div>
             </div>
         </header>
         
-        <!-- Profile Content -->
+        <!-- Main Content Area -->
         <main class="pb-20">
-            <!-- Profile Header -->
-            <div class="profile-header">
-                <div class="profile-pic">
-                    <i class="fas fa-crow"></i>
-                </div>
-                <h2 class="text-xl font-bold mt-2">Nayla Yuva</h2>
-                <p class="text-sm opacity-90">Siswa Kelas 10 IPA</p>
-                <div class="mt-2">
-                    <span class="badge badge-primary"><i class="fas fa-star mr-1"></i> Level 7</span>
-                    <span class="badge badge-primary"><i class="fas fa-trophy mr-1"></i> Rank #15</span>
-                </div>
-            </div>
-            
-            <!-- Stats Section -->
-            <section class="p-4 bg-white mx-4 mt-[-20px] rounded-lg shadow-sm">
-                <div class="stats-container">
-                    <div class="stat">
-                        <div class="stat-value">1,250</div>
-                        <div class="stat-label">Poin</div>
+            <!-- Page Title -->
+            <section class="p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Lab Virtual Fisika</h2>
+                        <p class="text-sm text-gray-600">Eksperimen fisika virtual yang interaktif</p>
                     </div>
-                    <div class="stat">
-                        <div class="stat-value">87</div>
-                        <div class="stat-label">Kuis</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">24</div>
-                        <div class="stat-label">Hadiah</div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <div class="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>Progress ke Level 8</span>
-                        <span>250/500 poin</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 50%"></div>
+                    <div class="bg-primary/10 text-primary p-3 rounded-full">
+                        <i class="fas fa-flask text-xl"></i>
                     </div>
                 </div>
             </section>
             
-            <!-- Achievements Section -->
-            <section class="p-4 mt-4">
-                <h3 class="font-bold text-gray-800 mb-3">Pencapaian</h3>
-                
-                <div class="achievement-card">
-                    <div class="achievement-icon" style="background: #fef3c7; color: #d97706;">
-                        <i class="fas fa-medal"></i>
+            <!-- Lab Tip -->
+            <section class="p-4">
+                <div class="lab-tip rounded-lg p-4 shadow-sm">
+                    <div class="flex items-start">
+                        <div class="bg-primary/10 text-primary p-2 rounded-full mr-3">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Tip Lab Virtual</h3>
+                            <p class="text-sm text-gray-600 mt-1">"Ubah parameter percobaan untuk melihat bagaimana hasilnya berubah. Eksperimenlah dengan bebas tanpa takut salah!"</p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">Juara Kuis Mingguan</h4>
-                        <p class="text-xs text-gray-600">Mendapatkan skor tertinggi dalam kuis fisika mingguan</p>
-                    </div>
-                </div>
-                
-                <div class="achievement-card">
-                    <div class="achievement-icon" style="background: #cffafe; color: #0e7490;">
-                        <i class="fas fa-fire"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">Streak 7 Hari</h4>
-                        <p class="text-xs text-gray-600">Mengerjakan kuis selama 7 hari berturut-turut</p>
-                    </div>
-                </div>
-                
-                <div class="achievement-card">
-                    <div class="achievement-icon" style="background: #f0fdf4; color: #047857;">
-                        <i class="fas fa-check-double"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">Master Termodinamika</h4>
-                        <p class="text-xs text-gray-600">Menyelesaikan semua materi termodinamika dengan sempurna</p>
-                    </div>
-                </div>
-                
-                <div class="text-center mt-4">
-                    <button class="text-primary text-sm font-medium">
-                        Lihat semua pencapaian <i class="fas fa-chevron-right ml-1"></i>
-                    </button>
                 </div>
             </section>
             
-            <!-- Progress Section -->
-            <section class="p-4 mt-4">
-                <h3 class="font-bold text-gray-800 mb-3">Progress Pembelajaran</h3>
+            <!-- Featured Simulation -->
+            <section class="p-4">
+                <h3 class="font-bold text-gray-800 mb-3">Simulasi Unggulan</h3>
                 
-                <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-                    <h4 class="font-bold text-gray-800">Fisika Dasar</h4>
-                    <div class="flex justify-between text-sm text-gray-600 mb-1 mt-2">
-                        <span>Progress</span>
-                        <span>75%</span>
+                <div class="simulation-card bg-gray-200 mb-4" style="background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'); background-size: cover; background-position: center;">
+                    <div class="text-center">
+                        <h3 class="text-xl font-bold">Hukum Newton</h3>
+                        <p class="text-sm">Eksperimen interaktif tentang gerak</p>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 75%"></div>
+                    <div class="simulation-overlay">
+                        <div class="play-button">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <p class="text-sm">Mulai Eksperimen</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Lab Categories -->
+            <section class="p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-gray-800">Kategori Lab Virtual</h3>
+                    <span class="text-xs text-gray-500">8 eksperimen tersedia</span>
+                </div>
+                
+                <!-- Mechanics Lab -->
+                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-green-500">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-green-100 text-green-600 p-3 rounded-lg mr-3 lab-icon">
+                                <i class="fas fa-weight-hanging"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Mekanika</h3>
+                                <p class="text-xs text-gray-500">Gerak, gaya, dan energi</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="level-badge pemula">Pemula</span>
+                            <div class="mt-1 text-xs text-gray-500">
+                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 15m</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="new-badge">BARU</div>
+                </div>
+                
+                <!-- Thermodynamics Lab -->
+                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-purple-500">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 text-purple-600 p-3 rounded-lg mr-3 lab-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Termodinamika</h3>
+                                <p class="text-xs text-gray-500">Kalor, suhu, dan hukum termodinamika</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="level-badge menengah">Menengah</span>
+                            <div class="mt-1 text-xs text-gray-500">
+                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 25m</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-                    <h4 class="font-bold text-gray-800">Termodinamika</h4>
-                    <div class="flex justify-between text-sm text-gray-600 mb-1 mt-2">
-                        <span>Progress</span>
-                        <span>100%</span>
+                <!-- Electricity & Magnetism Lab -->
+                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-blue-500">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-lg mr-3 lab-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Listrik & Magnet</h3>
+                                <p class="text-xs text-gray-500">Rangkaian listrik dan kemagnetan</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="level-badge menengah">Menengah</span>
+                            <div class="mt-1 text-xs text-gray-500">
+                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 20m</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 100%"></div>
+                </div>
+                
+                <!-- Waves & Optics Lab -->
+                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-red-500">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-red-100 text-red-600 p-3 rounded-lg mr-3 lab-icon">
+                                <i class="fas fa-wave-square"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Gelombang & Optik</h3>
+                                <p class="text-xs text-gray-500">Cahaya, suara, dan gelombang</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="level-badge mahir">Mahir</span>
+                            <div class="mt-1 text-xs text-gray-500">
+                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 30m</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modern Physics Lab -->
+                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-teal-500">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <div class="bg-teal-100 text-teal-600 p-3 rounded-lg mr-3 lab-icon">
+                                <i class="fas fa-atom"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800">Fisika Modern</h3>
+                                <p class="text-xs text-gray-500">Relativitas dan kuantum</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="level-badge mahir">Mahir</span>
+                            <div class="mt-1 text-xs text-gray-500">
+                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 35m</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Challenge Section -->
+                <div class="bg-gradient-to-r from-primary to-secondary rounded-lg p-4 text-white mt-6">
+                    <h3 class="font-bold text-lg mb-2">Eksperimen Mingguan</h3>
+                    <p class="text-sm mb-4">Selesaikan 3 eksperimen dalam seminggu untuk mendapatkan lencana "Ilmuwan Muda"!</p>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-sm">Progress: 1/3 eksperimen</span>
+                            <div class="progress-bar mt-1 bg-white/30">
+                                <div class="progress-fill bg-white" style="width: 33%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white text-primary font-bold py-2 px-4 rounded-lg text-sm">
+                            Jelajahi
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Recent Activities -->
+            <section class="p-4 mt-4">
+                <h3 class="font-bold text-gray-800 mb-3">Aktivitas Terbaru</h3>
+                
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-3">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 text-green-600 p-2 rounded-full mr-3">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Percobaan Hukum Hooke</h4>
+                            <p class="text-xs text-gray-600">Selesai • 2 hari yang lalu</p>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="bg-white rounded-lg shadow-sm p-4">
-                    <h4 class="font-bold text-gray-800">Fisika Kuantum</h4>
-                    <div class="flex justify-between text-sm text-gray-600 mb-1 mt-2">
-                        <span>Progress</span>
-                        <span>40%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 40%"></div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Menu Section -->
-            <section class="p-4 mt-4">
-                <h3 class="font-bold text-gray-800 mb-3">Pengaturan & Lainnya</h3>
-                
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div class="menu-item">
-                        <div class="menu-icon">
-                            <i class="fas fa-user-edit"></i>
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 text-blue-600 p-2 rounded-full mr-3">
+                            <i class="fas fa-play-circle"></i>
                         </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-gray-800">Edit Profil</h4>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Pembiasan Cahaya</h4>
+                            <p class="text-xs text-gray-600">Dalam progres • 5 hari yang lalu</p>
                         </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                    
-                    <div class="menu-item">
-                        <div class="menu-icon">
-                            <i class="fas fa-history"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-gray-800">Riwayat Pembelajaran</h4>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                    
-                    <div class="menu-item">
-                        <div class="menu-icon">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-gray-800">Pencapaian Saya</h4>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                    
-                    <div class="menu-item">
-                        <div class="menu-icon">
-                            <i class="fas fa-cog"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-gray-800">Pengaturan</h4>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                    
-                    <div class="menu-item">
-                        <div class="menu-icon">
-                            <i class="fas fa-question-circle"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-gray-800">Bantuan & Dukungan</h4>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
-                    
-                    <div class="menu-item">
-                        <div class="menu-icon">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-gray-800">Keluar</h4>
-                        </div>
-                        <i class="fas fa-chevron-right text-gray-400"></i>
                     </div>
                 </div>
             </section>
@@ -404,7 +433,7 @@
             </a>
             <a href="kategori soal.html" class="flex flex-col items-center text-gray-500">
                 <i class="fas fa-flask nav-icon text-xl"></i>
-                <span class="text-xs mt-1">Soal Harian</span>
+                <span class="text-xs mt-1">Kuis</span>
             </a>
             <a href="../ai/index.html" class="flex flex-col items-center text-gray-500">
                 <i class="fas fa-robot nav-icon text-xl"></i>
@@ -412,10 +441,10 @@
             </a>
             <a href="kategori materi.html" class="flex flex-col items-center text-gray-500">
                 <i class="fas fa-chalkboard-teacher nav-icon text-xl"></i>
-                <span class="text-xs mt-1">Materi Harian</span>
+                <span class="text-xs mt-1">Materi</span>
             </a>
-            <a href="../profil.html" class="flex flex-col items-center text-primary">
-                <i class="fas fa-user nav-icon text-xl active"></i>
+            <a href="../profil.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-user nav-icon text-xl"></i>
                 <span class="text-xs mt-1">Profil</span>
             </a>
         </nav>
@@ -442,10 +471,20 @@
                 });
             });
             
-            // Set current page as active
-            document.querySelector('.bottom-nav a[href="../profil.html"] i').classList.add('active');
-            document.querySelector('.bottom-nav a[href="../profil.html"]').classList.add('text-primary');
-            document.querySelector('.bottom-nav a[href="../profil.html"]').classList.remove('text-gray-500');
+            // Lab category interaction
+            const labCategories = document.querySelectorAll('.lab-category');
+            labCategories.forEach(lab => {
+                lab.addEventListener('click', function() {
+                    const labTitle = this.querySelector('h3').textContent;
+                    alert(`Membuka lab virtual: ${labTitle}`);
+                });
+            });
+            
+            // Simulation card interaction
+            const simulationCard = document.querySelector('.simulation-card');
+            simulationCard.addEventListener('click', function() {
+                alert('Memulai simulasi Hukum Newton');
+            });
         });
     </script>
 </body>
