@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TETA SAINS - Lab Virtual Fisika</title>
+    <title>Lab Virtual Hukum Newton - TETA SAINS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -12,14 +14,14 @@
             --primary: #38b2ac;
             --secondary: #0e7490;
             --accent: #f59e0b;
-            --gold: #fbbf24;
-            --silver: #9ca3af;
-            --bronze: #b45309;
         }
         
         body {
             font-family: 'Baloo 2', cursive;
             background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
         
         .app-container {
@@ -31,169 +33,129 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
+        .simulation-container {
             width: 100%;
-            max-width: 414px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            background: white;
-            z-index: 10;
+            height: 300px;
+            position: relative;
         }
         
-        .nav-icon {
-            transition: all 0.3s ease;
+        #physics-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
         
-        .nav-icon.active {
-            transform: translateY(-10px);
+        .controls-panel {
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            margin: 15px;
+        }
+        
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .slider-value {
+            font-weight: bold;
             color: var(--primary);
         }
         
-        .app-logo {
-            display: flex;
-            align-items: center;
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            -webkit-appearance: none;
+            background: #cbd5e1;
+            border-radius: 5px;
+            outline: none;
         }
         
-        .app-logo-icon {
-            background: linear-gradient(135deg, #38b2ac, #0e7490);
-            color: white;
-            width: 36px;
-            height: 36px;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+        
+        .button-group {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 8px;
+            gap: 10px;
+            margin-top: 20px;
         }
         
-        .app-name {
-            font-weight: 700;
-            font-size: 1.25rem;
-            background: linear-gradient(135deg, #38b2ac, #0e7490);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Baloo 2', cursive;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .lab-category {
-            transition: all 0.3s ease;
-            border-left: 4px solid;
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-        }
-        
-        .lab-category:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        }
-        
-        .lab-icon {
-            transition: all 0.3s ease;
-        }
-        
-        .lab-category:hover .lab-icon {
-            transform: scale(1.1);
-        }
-        
-        .level-badge {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-        
-        .pemula {
-            background-color: #f0fdf4;
-            color: #16a34a;
-        }
-        
-        .menengah {
-            background-color: #fffbeb;
-            color: #d97706;
-        }
-        
-        .mahir {
-            background-color: #fef2f2;
-            color: #dc2626;
-        }
-        
-        .new-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ef4444;
+        .btn-primary {
+            background: var(--primary);
             color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-display {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .data-value {
             font-weight: bold;
-            animation: pulse 2s infinite;
+            color: var(--primary);
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .lab-tip {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        .theory-section {
+            background: #f8fafc;
+            padding: 15px;
+            margin: 15px;
+            border-radius: 12px;
             border-left: 4px solid var(--primary);
         }
         
-        .duration-badge {
-            background-color: #e0f2fe;
-            color: #0369a1;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: bold;
+        .theory-section h3 {
+            margin-top: 0;
+            color: var(--secondary);
         }
         
-        .simulation-card {
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-        
-        .simulation-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(56, 178, 172, 0.8), rgba(14, 116, 144, 0.8));
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .simulation-card:hover .simulation-overlay {
-            opacity: 1;
-        }
-        
-        .play-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 20px;
-            margin-bottom: 8px;
+        .theory-section p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #374151;
         }
     </style>
 </head>
@@ -222,206 +184,87 @@
             <section class="p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Lab Virtual Fisika</h2>
-                        <p class="text-sm text-gray-600">Eksperimen fisika virtual yang interaktif</p>
+                        <h2 class="text-2xl font-bold text-gray-800">Lab Virtual Hukum Newton</h2>
+                        <p class="text-sm text-gray-600">Eksperimen interaktif dengan gaya dan gerak</p>
                     </div>
                     <div class="bg-primary/10 text-primary p-3 rounded-full">
-                        <i class="fas fa-flask text-xl"></i>
+                        <i class="fas fa-weight-hanging text-xl"></i>
                     </div>
                 </div>
             </section>
             
-            <!-- Lab Tip -->
-            <section class="p-4">
-                <div class="lab-tip rounded-lg p-4 shadow-sm">
-                    <div class="flex items-start">
-                        <div class="bg-primary/10 text-primary p-2 rounded-full mr-3">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800">Tip Lab Virtual</h3>
-                            <p class="text-sm text-gray-600 mt-1">"Ubah parameter percobaan untuk melihat bagaimana hasilnya berubah. Eksperimenlah dengan bebas tanpa takut salah!"</p>
-                        </div>
+            <!-- Simulation Canvas -->
+            <section class="simulation-container">
+                <canvas id="physics-canvas"></canvas>
+            </section>
+            
+            <!-- Controls Panel -->
+            <section class="controls-panel">
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Gaya (N)</span>
+                        <span class="slider-value" id="force-value">10</span>
                     </div>
+                    <input type="range" id="force-slider" min="0" max="50" value="10">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Massa (kg)</span>
+                        <span class="slider-value" id="mass-value">5</span>
+                    </div>
+                    <input type="range" id="mass-slider" min="1" max="20" value="5">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Gesekan</span>
+                        <span class="slider-value" id="friction-value">0.2</span>
+                    </div>
+                    <input type="range" id="friction-slider" min="0" max="10" value="2" step="0.1">
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" id="start-btn">
+                        <i class="fas fa-play mr-2"></i>Mulai
+                    </button>
+                    <button class="btn btn-secondary" id="reset-btn">
+                        <i class="fas fa-redo mr-2"></i>Reset
+                    </button>
                 </div>
             </section>
             
-            <!-- Featured Simulation -->
-            <section class="p-4">
-                <h3 class="font-bold text-gray-800 mb-3">Simulasi Unggulan</h3>
+            <!-- Data Display -->
+            <section class="data-display">
+                <h3 class="font-bold text-gray-800 mb-3">Data Eksperimen</h3>
                 
-                <div class="simulation-card bg-gray-200 mb-4" style="background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'); background-size: cover; background-position: center;">
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold">Hukum Newton</h3>
-                        <p class="text-sm">Eksperimen interaktif tentang gerak</p>
-                    </div>
-                    <div class="simulation-overlay">
-                        <div class="play-button">
-                            <i class="fas fa-play"></i>
-                        </div>
-                        <p class="text-sm">Mulai Eksperimen</p>
-                    </div>
+                <div class="data-item">
+                    <span>Percepatan (m/s²)</span>
+                    <span class="data-value" id="acceleration-value">0.00</span>
+                </div>
+                
+                <div class="data-item">
+                    <span>Kecepatan (m/s)</span>
+                    <span class="data-value" id="velocity-value">0.00</span>
+                </div>
+                
+                <div class="data-item">
+                    <span>Jarak (m)</span>
+                    <span class="data-value" id="distance-value">0.00</span>
+                </div>
+                
+                <div class="data-item">
+                    <span>Waktu (s)</span>
+                    <span class="data-value" id="time-value">0.00</span>
                 </div>
             </section>
             
-            <!-- Lab Categories -->
-            <section class="p-4">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-gray-800">Kategori Lab Virtual</h3>
-                    <span class="text-xs text-gray-500">8 eksperimen tersedia</span>
-                </div>
-                
-                <!-- Mechanics Lab -->
-                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-green-500">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center">
-                            <div class="bg-green-100 text-green-600 p-3 rounded-lg mr-3 lab-icon">
-                                <i class="fas fa-weight-hanging"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-800">Mekanika</h3>
-                                <p class="text-xs text-gray-500">Gerak, gaya, dan energi</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="level-badge pemula">Pemula</span>
-                            <div class="mt-1 text-xs text-gray-500">
-                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 15m</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="new-badge">BARU</div>
-                </div>
-                
-                <!-- Thermodynamics Lab -->
-                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-purple-500">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center">
-                            <div class="bg-purple-100 text-purple-600 p-3 rounded-lg mr-3 lab-icon">
-                                <i class="fas fa-fire"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-800">Termodinamika</h3>
-                                <p class="text-xs text-gray-500">Kalor, suhu, dan hukum termodinamika</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="level-badge menengah">Menengah</span>
-                            <div class="mt-1 text-xs text-gray-500">
-                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 25m</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Electricity & Magnetism Lab -->
-                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-blue-500">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center">
-                            <div class="bg-blue-100 text-blue-600 p-3 rounded-lg mr-3 lab-icon">
-                                <i class="fas fa-bolt"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-800">Listrik & Magnet</h3>
-                                <p class="text-xs text-gray-500">Rangkaian listrik dan kemagnetan</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="level-badge menengah">Menengah</span>
-                            <div class="mt-1 text-xs text-gray-500">
-                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 20m</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Waves & Optics Lab -->
-                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-red-500">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center">
-                            <div class="bg-red-100 text-red-600 p-3 rounded-lg mr-3 lab-icon">
-                                <i class="fas fa-wave-square"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-800">Gelombang & Optik</h3>
-                                <p class="text-xs text-gray-500">Cahaya, suara, dan gelombang</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="level-badge mahir">Mahir</span>
-                            <div class="mt-1 text-xs text-gray-500">
-                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 30m</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Modern Physics Lab -->
-                <div class="lab-category bg-white rounded-lg shadow-sm p-4 mb-4 border-l-teal-500">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center">
-                            <div class="bg-teal-100 text-teal-600 p-3 rounded-lg mr-3 lab-icon">
-                                <i class="fas fa-atom"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-800">Fisika Modern</h3>
-                                <p class="text-xs text-gray-500">Relativitas dan kuantum</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="level-badge mahir">Mahir</span>
-                            <div class="mt-1 text-xs text-gray-500">
-                                <span class="duration-badge"><i class="fas fa-clock mr-1"></i> 35m</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Challenge Section -->
-                <div class="bg-gradient-to-r from-primary to-secondary rounded-lg p-4 text-white mt-6">
-                    <h3 class="font-bold text-lg mb-2">Eksperimen Mingguan</h3>
-                    <p class="text-sm mb-4">Selesaikan 3 eksperimen dalam seminggu untuk mendapatkan lencana "Ilmuwan Muda"!</p>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <span class="text-sm">Progress: 1/3 eksperimen</span>
-                            <div class="progress-bar mt-1 bg-white/30">
-                                <div class="progress-fill bg-white" style="width: 33%"></div>
-                            </div>
-                        </div>
-                        <div class="bg-white text-primary font-bold py-2 px-4 rounded-lg text-sm">
-                            Jelajahi
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Recent Activities -->
-            <section class="p-4 mt-4">
-                <h3 class="font-bold text-gray-800 mb-3">Aktivitas Terbaru</h3>
-                
-                <div class="bg-white rounded-lg shadow-sm p-4 mb-3">
-                    <div class="flex items-center">
-                        <div class="bg-green-100 text-green-600 p-2 rounded-full mr-3">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800">Percobaan Hukum Hooke</h4>
-                            <p class="text-xs text-gray-600">Selesai • 2 hari yang lalu</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="flex items-center">
-                        <div class="bg-blue-100 text-blue-600 p-2 rounded-full mr-3">
-                            <i class="fas fa-play-circle"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800">Pembiasan Cahaya</h4>
-                            <p class="text-xs text-gray-600">Dalam progres • 5 hari yang lalu</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- Theory Section -->
+            <section class="theory-section">
+                <h3 class="font-bold">Hukum II Newton</h3>
+                <p>Hukum II Newton menyatakan bahwa percepatan sebuah benda berbanding lurus dengan gaya total yang bekerja padanya dan berbanding terbalik dengan massanya. Arah percepatan sama dengan arah gaya total yang bekerja padanya.</p>
+                <p class="mt-2 font-mono">∑F = m × a</p>
+                <p class="mt-2">Dimana: ∑F = gaya total (N), m = massa (kg), a = percepatan (m/s²)</p>
             </section>
         </main>
         
@@ -451,39 +294,200 @@
     </div>
 
     <script>
-        // Simple interaction for bottom nav
-        document.addEventListener('DOMContentLoaded', function() {
-            const navItems = document.querySelectorAll('.nav-icon');
+        // Variables for physics simulation
+        let scene, camera, renderer, controls;
+        let cube, plane;
+        let force = 10; // in Newtons
+        let mass = 5;   // in kg
+        let friction = 0.2; // friction coefficient
+        let acceleration = 0;
+        let velocity = 0;
+        let distance = 0;
+        let time = 0;
+        let isSimulating = false;
+        let clock = new THREE.Clock();
+        
+        // Initialize Three.js scene
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf0f9ff);
             
+            // Setup camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 5, 10);
+            camera.lookAt(0, 0, 0);
+            
+            // Setup renderer
+            const canvas = document.getElementById('physics-canvas');
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // Add orbit controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Add lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 10, 7);
+            scene.add(directionalLight);
+            
+            // Create ground plane
+            const planeGeometry = new THREE.PlaneGeometry(20, 10);
+            const planeMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x90caf9,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+            plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.rotation.x = -Math.PI / 2;
+            plane.position.y = -1;
+            scene.add(plane);
+            
+            // Create a cube to represent the object
+            const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const cubeMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x38b2ac,
+                roughness: 0.7,
+                metalness: 0.3
+            });
+            cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            cube.position.set(-8, 0, 0);
+            scene.add(cube);
+            
+            // Add grid helper
+            const gridHelper = new THREE.GridHelper(20, 20, 0x000000, 0x000000);
+            gridHelper.position.y = -0.99;
+            gridHelper.material.opacity = 0.2;
+            gridHelper.material.transparent = true;
+            scene.add(gridHelper);
+            
+            // Add axes helper
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start animation loop
+            animate();
+        }
+        
+        function onWindowResize() {
+            const canvas = document.getElementById('physics-canvas');
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            
+            if (isSimulating) {
+                time += delta;
+                
+                // Calculate physics based on Newton's second law: F = m * a
+                const netForce = force - (friction * mass * 9.8); // F_net = applied force - friction
+                acceleration = netForce / mass;
+                
+                // Update velocity and position
+                velocity += acceleration * delta;
+                cube.position.x += velocity * delta;
+                
+                // Update distance
+                distance = Math.max(0, cube.position.x + 8);
+                
+                // Update UI values
+                document.getElementById('acceleration-value').textContent = acceleration.toFixed(2);
+                document.getElementById('velocity-value').textContent = velocity.toFixed(2);
+                document.getElementById('distance-value').textContent = distance.toFixed(2);
+                document.getElementById('time-value').textContent = time.toFixed(2);
+                
+                // Stop simulation if cube goes out of bounds
+                if (cube.position.x > 8) {
+                    isSimulating = false;
+                }
+            }
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        // Initialize sliders and buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Three.js
+            init();
+            
+            // Setup force slider
+            const forceSlider = document.getElementById('force-slider');
+            const forceValue = document.getElementById('force-value');
+            
+            forceSlider.addEventListener('input', function() {
+                force = parseInt(this.value);
+                forceValue.textContent = force;
+            });
+            
+            // Setup mass slider
+            const massSlider = document.getElementById('mass-slider');
+            const massValue = document.getElementById('mass-value');
+            
+            massSlider.addEventListener('input', function() {
+                mass = parseInt(this.value);
+                massValue.textContent = mass;
+            });
+            
+            // Setup friction slider
+            const frictionSlider = document.getElementById('friction-slider');
+            const frictionValue = document.getElementById('friction-value');
+            
+            frictionSlider.addEventListener('input', function() {
+                friction = parseFloat(this.value) / 10;
+                frictionValue.textContent = friction.toFixed(1);
+            });
+            
+            // Start button
+            document.getElementById('start-btn').addEventListener('click', function() {
+                isSimulating = true;
+                clock.start();
+            });
+            
+            // Reset button
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                isSimulating = false;
+                cube.position.x = -8;
+                velocity = 0;
+                acceleration = 0;
+                distance = 0;
+                time = 0;
+                
+                // Reset UI values
+                document.getElementById('acceleration-value').textContent = '0.00';
+                document.getElementById('velocity-value').textContent = '0.00';
+                document.getElementById('distance-value').textContent = '0.00';
+                document.getElementById('time-value').textContent = '0.00';
+            });
+            
+            // Bottom nav interaction
+            const navItems = document.querySelectorAll('.nav-icon');
             navItems.forEach(item => {
                 item.addEventListener('click', function() {
-                    // Remove active class from all
                     navItems.forEach(nav => {
                         nav.classList.remove('active');
                         nav.parentElement.classList.remove('text-primary');
                         nav.parentElement.classList.add('text-gray-500');
                     });
                     
-                    // Add to clicked
                     this.classList.add('active');
                     this.parentElement.classList.add('text-primary');
                     this.parentElement.classList.remove('text-gray-500');
                 });
-            });
-            
-            // Lab category interaction
-            const labCategories = document.querySelectorAll('.lab-category');
-            labCategories.forEach(lab => {
-                lab.addEventListener('click', function() {
-                    const labTitle = this.querySelector('h3').textContent;
-                    alert(`Membuka lab virtual: ${labTitle}`);
-                });
-            });
-            
-            // Simulation card interaction
-            const simulationCard = document.querySelector('.simulation-card');
-            simulationCard.addEventListener('click', function() {
-                alert('Memulai simulasi Hukum Newton');
             });
         });
     </script>
