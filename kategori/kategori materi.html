@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TETA SAINS - Lab Virtual Fisika Interaktif</title>
+    <title>Lab Virtual Hukum Newton - TETA SAINS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -14,441 +14,320 @@
             --primary: #38b2ac;
             --secondary: #0e7490;
             --accent: #f59e0b;
-            --gold: #fbbf24;
-            --silver: #9ca3af;
-            --bronze: #b45309;
         }
         
         body {
             font-family: 'Baloo 2', cursive;
             background-color: #f8fafc;
             margin: 0;
+            padding: 0;
             overflow: hidden;
-        }
-        
-        #canvas-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
         }
         
         .app-container {
-            position: relative;
-            max-width: 100%;
+            max-width: 414px;
             margin: 0 auto;
             background: white;
-            height: 100vh;
+            min-height: 100vh;
+            position: relative;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
         
-        .ui-panel {
-            position: absolute;
-            bottom: 70px;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 15px 15px 0 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            transform: translateY(calc(100% - 50px));
-            transition: transform 0.3s ease;
+        .simulation-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
         }
         
-        .ui-panel.expanded {
-            transform: translateY(0);
-        }
-        
-        .ui-handle {
-            width: 50px;
-            height: 5px;
-            background: #ddd;
-            border-radius: 3px;
-            margin: 0 auto 10px auto;
-            cursor: pointer;
-        }
-        
-        .control-group {
-            margin-bottom: 15px;
-        }
-        
-        .control-label {
-            font-weight: bold;
-            margin-bottom: 5px;
+        #physics-canvas {
+            width: 100%;
+            height: 100%;
             display: block;
-            color: #333;
+        }
+        
+        .controls-panel {
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            margin: 15px;
         }
         
         .slider-container {
+            margin-bottom: 15px;
+        }
+        
+        .slider-label {
             display: flex;
-            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #374151;
         }
         
         .slider-value {
-            min-width: 40px;
-            text-align: right;
-            margin-left: 10px;
             font-weight: bold;
             color: var(--primary);
         }
         
         input[type="range"] {
             width: 100%;
+            height: 5px;
             -webkit-appearance: none;
-            height: 8px;
-            border-radius: 4px;
-            background: #e2e8f0;
+            background: #cbd5e1;
+            border-radius: 5px;
             outline: none;
         }
         
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: var(--primary);
             cursor: pointer;
         }
         
         .button-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 20px;
         }
         
-        .control-button {
+        .btn {
+            flex: 1;
             padding: 10px;
             border: none;
             border-radius: 8px;
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
+            font-family: 'Baloo 2', cursive;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
         
-        .control-button:hover {
-            background: var(--secondary);
-        }
-        
-        .control-button.reset {
-            background: #e53e3e;
-        }
-        
-        .control-button.reset:hover {
-            background: #c53030;
-        }
-        
-        .user-list {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            max-width: 150px;
-        }
-        
-        .user-list-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-            font-size: 14px;
-        }
-        
-        .user-item {
-            display: flex;
-            align-items: center;
-            margin: 5px 0;
-            font-size: 13px;
-        }
-        
-        .user-avatar {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+        .btn-primary {
             background: var(--primary);
-            margin-right: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: white;
-            font-size: 10px;
         }
         
-        .user-teacher .user-avatar {
-            background: var(--accent);
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
         }
         
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 100%;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-display {
             background: white;
-            z-index: 20;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-item {
             display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #718096;
-            font-size: 12px;
-        }
-        
-        .nav-item.active {
-            color: var(--primary);
-        }
-        
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 3px;
-        }
-        
-        .chat-container {
-            position: absolute;
-            bottom: 70px;
-            right: 10px;
-            width: 300px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            max-height: 300px;
-            overflow: hidden;
-        }
-        
-        .chat-header {
-            padding: 10px;
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-            border-radius: 10px 10px 0 0;
-        }
-        
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-        
-        .message {
-            margin-bottom: 10px;
-            padding: 8px;
-            border-radius: 8px;
-            background: #f1f5f9;
+            justify-content: space-between;
+            margin-bottom: 8px;
             font-size: 14px;
         }
         
-        .message.own {
-            background: #e0f2fe;
-            text-align: right;
-        }
-        
-        .message-system {
-            font-style: italic;
-            color: #718096;
-            text-align: center;
-            font-size: 12px;
-        }
-        
-        .chat-input {
-            display: flex;
-            padding: 10px;
-            border-top: 1px solid #e2e8f0;
-        }
-        
-        .chat-input input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            outline: none;
-        }
-        
-        .chat-input button {
-            margin-left: 5px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0 15px;
-            cursor: pointer;
-        }
-        
-        .experiment-info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            max-width: 250px;
-        }
-        
-        .experiment-title {
+        .data-value {
             font-weight: bold;
-            margin-bottom: 5px;
             color: var(--primary);
         }
         
-        .experiment-description {
-            font-size: 13px;
-            color: #4a5568;
+        .theory-section {
+            background: #f8fafc;
+            padding: 15px;
+            margin: 15px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .theory-section h3 {
+            margin-top: 0;
+            color: var(--secondary);
+        }
+        
+        .theory-section p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #374151;
         }
     </style>
 </head>
 <body>
+    <!-- Mobile App Container -->
     <div class="app-container">
-        <!-- Canvas container for Three.js -->
-        <div id="canvas-container"></div>
-        
-        <!-- Experiment info panel -->
-        <div class="experiment-info">
-            <div class="experiment-title">Hukum Newton tentang Gerak</div>
-            <div class="experiment-description">
-                Ubah massa dan gaya untuk melihat efeknya terhadap percepatan benda.
-                Geser panel kontrol di bawah untuk mengubah parameter.
-            </div>
-        </div>
-        
-        <!-- User list panel -->
-        <div class="user-list">
-            <div class="user-list-title">Pengguna Online (3)</div>
-            <div class="user-item user-teacher">
-                <div class="user-avatar"><i class="fas fa-chalkboard-teacher"></i></div>
-                <span>Ahmad Husein (Pengajar)</span>
-            </div>
-            <div class="user-item">
-                <div class="user-avatar">S</div>
-                <span>Nayla</span>
-            </div>
-            <div class="user-item">
-                <div class="user-avatar">B</div>
-                <span>Savilla</span>
-            </div>
-        </div>
-        
-        <!-- Chat container -->
-        <div class="chat-container">
-            <div class="chat-header">
-                <i class="fas fa-comments"></i> Chat Lab
-            </div>
-            <div class="chat-messages">
-                <div class="message-system">Anda bergabung ke dalam lab</div>
-                <div class="message own">Hai, saya sudah siap melakukan percobaan</div>
-                <div class="message">Ahmad Husein: Silakan ubah parameter dan amati hasilnya</div>
-                <div class="message">Nayla: Saya mencoba menambah gaya menjadi 50N</div>
-            </div>
-            <div class="chat-input">
-                <input type="text" placeholder="Ketik pesan...">
-                <button><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-        
-        <!-- Control panel -->
-        <div class="ui-panel">
-            <div class="ui-handle"></div>
-            <div class="control-group">
-                <label class="control-label">Massa Benda (kg)</label>
-                <div class="slider-container">
-                    <input type="range" min="1" max="100" value="10" class="slider" id="mass-slider">
-                    <span class="slider-value" id="mass-value">10 kg</span>
+        <!-- App Header -->
+        <header class="bg-gradient-to-r from-primary to-secondary p-4 text-white">
+            <div class="flex justify-between items-center">
+                <div class="app-logo">
+                    <div class="app-logo-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h1 class="app-name">TETA SAINS</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-user-circle text-xl"></i>
                 </div>
             </div>
-            
-            <div class="control-group">
-                <label class="control-label">Gaya (N)</label>
-                <div class="slider-container">
-                    <input type="range" min="1" max="100" value="20" class="slider" id="force-slider">
-                    <span class="slider-value" id="force-value">20 N</span>
-                </div>
-            </div>
-            
-            <div class="control-group">
-                <label class="control-label">Gesekan</label>
-                <div class="slider-container">
-                    <input type="range" min="0" max="10" value="2" class="slider" id="friction-slider">
-                    <span class="slider-value" id="friction-value">2 N</span>
-                </div>
-            </div>
-            
-            <div class="button-group">
-                <button class="control-button start"><i class="fas fa-play"></i> Mulai</button>
-                <button class="control-button pause"><i class="fas fa-pause"></i> Jeda</button>
-                <button class="control-button reset"><i class="fas fa-redo"></i> Reset</button>
-            </div>
-        </div>
+        </header>
         
-        <!-- Bottom navigation -->
-        <div class="bottom-nav">
-            <div class="nav-item">
-                <div class="nav-icon"><i class="fas fa-home"></i></div>
-                <span>Beranda</span>
-            </div>
-            <div class="nav-item active">
-                <div class="nav-icon"><i class="fas fa-flask"></i></div>
-                <span>Lab</span>
-            </div>
-            <div class="nav-item">
-                <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
-                <span>Data</span>
-            </div>
-            <div class="nav-item">
-                <div class="nav-icon"><i class="fas fa-users"></i></div>
-                <span>Kolaborasi</span>
-            </div>
-            <div class="nav-item">
-                <div class="nav-icon"><i class="fas fa-cog"></i></div>
-                <span>Pengaturan</span>
-            </div>
-        </div>
+        <!-- Main Content Area -->
+        <main class="pb-20">
+            <!-- Page Title -->
+            <section class="p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Lab Virtual Hukum Newton</h2>
+                        <p class="text-sm text-gray-600">Eksperimen interaktif dengan gaya dan gerak</p>
+                    </div>
+                    <div class="bg-primary/10 text-primary p-3 rounded-full">
+                        <i class="fas fa-weight-hanging text-xl"></i>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Simulation Canvas -->
+            <section class="simulation-container">
+                <canvas id="physics-canvas"></canvas>
+            </section>
+            
+            <!-- Controls Panel -->
+            <section class="controls-panel">
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Gaya (N)</span>
+                        <span class="slider-value" id="force-value">10</span>
+                    </div>
+                    <input type="range" id="force-slider" min="0" max="50" value="10">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Massa (kg)</span>
+                        <span class="slider-value" id="mass-value">5</span>
+                    </div>
+                    <input type="range" id="mass-slider" min="1" max="20" value="5">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Gesekan</span>
+                        <span class="slider-value" id="friction-value">0.2</span>
+                    </div>
+                    <input type="range" id="friction-slider" min="0" max="10" value="2" step="0.1">
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" id="start-btn">
+                        <i class="fas fa-play mr-2"></i>Mulai
+                    </button>
+                    <button class="btn btn-secondary" id="reset-btn">
+                        <i class="fas fa-redo mr-2"></i>Reset
+                    </button>
+                </div>
+            </section>
+            
+            <!-- Data Display -->
+            <section class="data-display">
+                <h3 class="font-bold text-gray-800 mb-3">Data Eksperimen</h3>
+                
+                <div class="data-item">
+                    <span>Percepatan (m/s²)</span>
+                    <span class="data-value" id="acceleration-value">0.00</span>
+                </div>
+                
+                <div class="data-item">
+                    <span>Kecepatan (m/s)</span>
+                    <span class="data-value" id="velocity-value">0.00</span>
+                </div>
+                
+                <div class="data-item">
+                    <span>Jarak (m)</span>
+                    <span class="data-value" id="distance-value">0.00</span>
+                </div>
+                
+                <div class="data-item">
+                    <span>Waktu (s)</span>
+                    <span class="data-value" id="time-value">0.00</span>
+                </div>
+            </section>
+            
+            <!-- Theory Section -->
+            <section class="theory-section">
+                <h3 class="font-bold">Hukum II Newton</h3>
+                <p>Hukum II Newton menyatakan bahwa percepatan sebuah benda berbanding lurus dengan gaya total yang bekerja padanya dan berbanding terbalik dengan massanya. Arah percepatan sama dengan arah gaya total yang bekerja padanya.</p>
+                <p class="mt-2 font-mono">∑F = m × a</p>
+                <p class="mt-2">Dimana: ∑F = gaya total (N), m = massa (kg), a = percepatan (m/s²)</p>
+            </section>
+        </main>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav bg-white p-2 flex justify-around items-center">
+            <a href="../index2.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-home nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Beranda</span>
+            </a>
+            <a href="kategori soal.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-flask nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Kuis</span>
+            </a>
+            <a href="../ai/index.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-robot nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Nayra AI</span>
+            </a>
+            <a href="kategori materi.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-chalkboard-teacher nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Materi</span>
+            </a>
+            <a href="../profil.html" class="flex flex-col items-center text-gray-500">
+                <i class="fas fa-user nav-icon text-xl"></i>
+                <span class="text-xs mt-1">Profil</span>
+            </a>
+        </nav>
     </div>
 
     <script>
-        // Three.js Scene Setup
-        let scene, camera, renderer;
-        let cube;
-        let forceValue = 20;
-        let massValue = 10;
-        let frictionValue = 2;
+        // Variables for physics simulation
+        let scene, camera, renderer, controls;
+        let cube, plane;
+        let force = 10; // in Newtons
+        let mass = 5;   // in kg
+        let friction = 0.2; // friction coefficient
         let acceleration = 0;
         let velocity = 0;
+        let distance = 0;
+        let time = 0;
         let isSimulating = false;
+        let clock = new THREE.Clock();
         
+        // Initialize Three.js scene
         function init() {
             // Create scene
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xf0f9ff);
             
-            // Create camera
+            // Setup camera
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 5;
-            camera.position.y = 2;
+            camera.position.set(0, 5, 10);
             camera.lookAt(0, 0, 0);
             
-            // Create renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            // Setup renderer
+            const canvas = document.getElementById('physics-canvas');
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // Add orbit controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
             
             // Add lights
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -458,225 +337,159 @@
             directionalLight.position.set(5, 10, 7);
             scene.add(directionalLight);
             
-            // Create a floor
-            const floorGeometry = new THREE.PlaneGeometry(10, 10);
-            const floorMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x38b2ac,
+            // Create ground plane
+            const planeGeometry = new THREE.PlaneGeometry(20, 10);
+            const planeMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x90caf9,
                 roughness: 0.8,
                 metalness: 0.2
             });
-            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-            floor.rotation.x = -Math.PI / 2;
-            floor.position.y = -1;
-            scene.add(floor);
+            plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.rotation.x = -Math.PI / 2;
+            plane.position.y = -1;
+            scene.add(plane);
             
-            // Add grid helper to floor
-            const gridHelper = new THREE.GridHelper(10, 10, 0x000000, 0x000000);
-            gridHelper.position.y = -0.99;
-            scene.add(gridHelper);
-            
-            // Create a cube
-            const geometry = new THREE.BoxGeometry(1, 1, 1);
-            const material = new THREE.MeshStandardMaterial({ 
-                color: 0xf59e0b,
+            // Create a cube to represent the object
+            const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const cubeMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x38b2ac,
                 roughness: 0.7,
-                metalness: 0.1
+                metalness: 0.3
             });
-            cube = new THREE.Mesh(geometry, material);
-            cube.position.x = -4;
+            cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            cube.position.set(-8, 0, 0);
             scene.add(cube);
             
+            // Add grid helper
+            const gridHelper = new THREE.GridHelper(20, 20, 0x000000, 0x000000);
+            gridHelper.position.y = -0.99;
+            gridHelper.material.opacity = 0.2;
+            gridHelper.material.transparent = true;
+            scene.add(gridHelper);
+            
             // Add axes helper
-            const axesHelper = new THREE.AxesHelper(2);
+            const axesHelper = new THREE.AxesHelper(5);
             scene.add(axesHelper);
             
             // Handle window resize
-            window.addEventListener('resize', onWindowResize, false);
+            window.addEventListener('resize', onWindowResize);
             
             // Start animation loop
             animate();
         }
         
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            const canvas = document.getElementById('physics-canvas');
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
         }
         
         function animate() {
             requestAnimationFrame(animate);
             
+            const delta = clock.getDelta();
+            
             if (isSimulating) {
-                // Calculate acceleration based on force and mass (F = m * a)
-                acceleration = (forceValue - frictionValue) / massValue;
+                time += delta;
                 
-                // Update velocity
-                velocity += acceleration * 0.05;
+                // Calculate physics based on Newton's second law: F = m * a
+                const netForce = force - (friction * mass * 9.8); // F_net = applied force - friction
+                acceleration = netForce / mass;
                 
-                // Update position
-                cube.position.x += velocity * 0.05;
+                // Update velocity and position
+                velocity += acceleration * delta;
+                cube.position.x += velocity * delta;
                 
-                // Stop at the end of the floor
-                if (cube.position.x > 4) {
-                    cube.position.x = 4;
-                    velocity = 0;
+                // Update distance
+                distance = Math.max(0, cube.position.x + 8);
+                
+                // Update UI values
+                document.getElementById('acceleration-value').textContent = acceleration.toFixed(2);
+                document.getElementById('velocity-value').textContent = velocity.toFixed(2);
+                document.getElementById('distance-value').textContent = distance.toFixed(2);
+                document.getElementById('time-value').textContent = time.toFixed(2);
+                
+                // Stop simulation if cube goes out of bounds
+                if (cube.position.x > 8) {
                     isSimulating = false;
                 }
-                
-                // Rotate the cube based on velocity
-                cube.rotation.x += velocity * 0.01;
-                cube.rotation.y += velocity * 0.01;
             }
             
+            controls.update();
             renderer.render(scene, camera);
         }
         
-        // Initialize the scene
-        init();
-        
-        // UI Interactions
+        // Initialize sliders and buttons
         document.addEventListener('DOMContentLoaded', function() {
-            // Panel toggle
-            const uiPanel = document.querySelector('.ui-panel');
-            const uiHandle = document.querySelector('.ui-handle');
+            // Initialize Three.js
+            init();
             
-            uiHandle.addEventListener('click', function() {
-                uiPanel.classList.toggle('expanded');
-            });
-            
-            // Sliders
-            const massSlider = document.getElementById('mass-slider');
-            const massValue = document.getElementById('mass-value');
+            // Setup force slider
             const forceSlider = document.getElementById('force-slider');
-            const forceValueElem = document.getElementById('force-value');
-            const frictionSlider = document.getElementById('friction-slider');
-            const frictionValueElem = document.getElementById('friction-value');
-            
-            massSlider.addEventListener('input', function() {
-                massValue.textContent = this.value + ' kg';
-                massValue = parseFloat(this.value);
-                updateCubeAppearance();
-            });
+            const forceValue = document.getElementById('force-value');
             
             forceSlider.addEventListener('input', function() {
-                forceValueElem.textContent = this.value + ' N';
-                forceValue = parseFloat(this.value);
+                force = parseInt(this.value);
+                forceValue.textContent = force;
             });
+            
+            // Setup mass slider
+            const massSlider = document.getElementById('mass-slider');
+            const massValue = document.getElementById('mass-value');
+            
+            massSlider.addEventListener('input', function() {
+                mass = parseInt(this.value);
+                massValue.textContent = mass;
+            });
+            
+            // Setup friction slider
+            const frictionSlider = document.getElementById('friction-slider');
+            const frictionValue = document.getElementById('friction-value');
             
             frictionSlider.addEventListener('input', function() {
-                frictionValueElem.textContent = this.value + ' N';
-                frictionValue = parseFloat(this.value);
+                friction = parseFloat(this.value) / 10;
+                frictionValue.textContent = friction.toFixed(1);
             });
             
-            // Control buttons
-            const startBtn = document.querySelector('.control-button.start');
-            const pauseBtn = document.querySelector('.control-button.pause');
-            const resetBtn = document.querySelector('.control-button.reset');
-            
-            startBtn.addEventListener('click', function() {
+            // Start button
+            document.getElementById('start-btn').addEventListener('click', function() {
                 isSimulating = true;
+                clock.start();
             });
             
-            pauseBtn.addEventListener('click', function() {
+            // Reset button
+            document.getElementById('reset-btn').addEventListener('click', function() {
                 isSimulating = false;
-            });
-            
-            resetBtn.addEventListener('click', function() {
-                isSimulating = false;
-                cube.position.x = -4;
+                cube.position.x = -8;
                 velocity = 0;
                 acceleration = 0;
-                cube.rotation.x = 0;
-                cube.rotation.y = 0;
-            });
-            
-            // Update cube appearance based on mass
-            function updateCubeAppearance() {
-                const mass = parseFloat(massSlider.value);
-                const scale = 0.5 + (mass / 100) * 1.5;
-                cube.scale.set(scale, scale, scale);
+                distance = 0;
+                time = 0;
                 
-                // Update color based on mass (lighter for less mass, darker for more mass)
-                const colorIntensity = 0.5 + (mass / 100) * 0.5;
-                cube.material.color.setRGB(colorIntensity, colorIntensity * 0.6, 0);
-            }
-            
-            // Initialize cube appearance
-            updateCubeAppearance();
-            
-            // Simple chat functionality
-            const chatInput = document.querySelector('.chat-input input');
-            const chatMessages = document.querySelector('.chat-messages');
-            
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && this.value.trim() !== '') {
-                    const message = this.value;
-                    addMessage('Anda', message, true);
-                    this.value = '';
-                    
-                    // Simulate response after a delay
-                    setTimeout(() => {
-                        const responses = [
-                            "Hasil percobaan menarik!",
-                            "Coba ubah massanya dan lihat perbedaannya",
-                            "Itu demonstrasi yang bagus dari Hukum Newton II",
-                            "Perhatikan bagaimana percepatan berubah ketika massa bertambah"
-                        ];
-                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                        addMessage('Dr. Ahmad', randomResponse, false);
-                    }, 1000 + Math.random() * 2000);
-                }
+                // Reset UI values
+                document.getElementById('acceleration-value').textContent = '0.00';
+                document.getElementById('velocity-value').textContent = '0.00';
+                document.getElementById('distance-value').textContent = '0.00';
+                document.getElementById('time-value').textContent = '0.00';
             });
-            
-            function addMessage(sender, text, isOwn) {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message');
-                if (isOwn) messageDiv.classList.add('own');
-                messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-                chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
             
             // Bottom nav interaction
-            const navItems = document.querySelectorAll('.nav-item');
+            const navItems = document.querySelectorAll('.nav-icon');
             navItems.forEach(item => {
                 item.addEventListener('click', function() {
-                    navItems.forEach(nav => nav.classList.remove('active'));
+                    navItems.forEach(nav => {
+                        nav.classList.remove('active');
+                        nav.parentElement.classList.remove('text-primary');
+                        nav.parentElement.classList.add('text-gray-500');
+                    });
+                    
                     this.classList.add('active');
+                    this.parentElement.classList.add('text-primary');
+                    this.parentElement.classList.remove('text-gray-500');
                 });
             });
         });
-        
-        // Simulate WebSocket connection for multi-user collaboration
-        // In a real application, this would connect to a server
-        setTimeout(() => {
-            // Simulate user joining
-            const chatMessages = document.querySelector('.chat-messages');
-            const systemMsg = document.createElement('div');
-            systemMsg.classList.add('message-system');
-            systemMsg.textContent = "Sari bergabung ke dalam lab";
-            chatMessages.appendChild(systemMsg);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            // Simulate user interaction after a delay
-            setTimeout(() => {
-                addMessage('Sari', 'Saya mencoba menambah gaya menjadi 50N', false);
-                
-                // Simulate parameter change from another user
-                setTimeout(() => {
-                    forceSlider.value = 50;
-                    forceValueElem.textContent = '50 N';
-                    forceValue = 50;
-                    
-                    const systemMsg2 = document.createElement('div');
-                    systemMsg2.classList.add('message-system');
-                    systemMsg2.textContent = "Sari mengubah gaya menjadi 50N";
-                    chatMessages.appendChild(systemMsg2);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 1000);
-            }, 2000);
-        }, 3000);
     </script>
 </body>
 </html>
-
