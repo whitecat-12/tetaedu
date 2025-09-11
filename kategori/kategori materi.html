@@ -3,212 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TETA SAINS - Login</title>
+    <title>Simulasi Efek Fotolistrik - TETA SAINS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #7E22CE; /* Ungu solid */
-            --primary-light: #A855F7;
-            --primary-dark: #6B21A8;
+            --primary: #38b2ac;
+            --secondary: #0e7490;
             --accent: #f59e0b;
-            --gold: #fbbf24;
-            --silver: #9ca3af;
-            --bronze: #b45309;
         }
         
         body {
             font-family: 'Baloo 2', cursive;
             background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
         
         .app-container {
-            max-width: 414px;
+            max-width: 100%;
             margin: 0 auto;
             background: white;
             min-height: 100vh;
             position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         
-        .app-logo {
+        .simulation-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+        
+        #simulation-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            width: 300px;
+        }
+        
+        .slider-container {
             display: flex;
             align-items: center;
+            margin-bottom: 12px;
         }
         
-        .app-logo-icon {
-            background: var(--primary); /* Warna ungu solid */
-            color: white;
-            width: 36px;
-            height: 36px;
+        .slider-label {
+            min-width: 120px;
+            font-weight: 600;
+            color: #334155;
+        }
+        
+        .slider-value {
+            min-width: 60px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #e2e8f0;
+            border-radius: 3px;
+            outline: none;
+            margin: 0 12px;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(56, 178, 172, 0.4);
+        }
+        
+        .btn-control {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-family: 'Baloo 2', cursive;
+            font-weight: 600;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-control:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(56, 178, 172, 0.3);
+        }
+        
+        .btn-control i {
             margin-right: 8px;
         }
         
-        .app-name {
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+        }
+        
+        .title {
+            font-size: 1.5rem;
             font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--primary); /* Warna ungu solid */
+            color: var(--secondary);
+            margin-bottom: 8px;
         }
         
-        .login-card {
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(126, 34, 206, 0.2); /* Shadow ungu */
+        .explanation {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 16px;
         }
         
-        .input-group {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-        
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary); /* Warna ungu solid */
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 15px 12px 45px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-family: 'Baloo 2', cursive;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(126, 34, 206, 0.2); /* Shadow ungu */
-            outline: none;
-        }
-        
-        .btn-login {
-            background: var(--primary); /* Warna ungu solid */
-            color: white;
-            padding: 14px;
-            border-radius: 12px;
-            font-family: 'Baloo 2', cursive;
-            font-weight: 600;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-        
-        .btn-login:hover {
-            background: var(--primary-dark); /* Warna ungu solid lebih gelap */
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(126, 34, 206, 0.3); /* Shadow ungu */
-        }
-        
-        .divider {
+        .data-item {
             display: flex;
-            align-items: center;
-            text-align: center;
-            color: #94a3b8;
-            font-size: 14px;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
         }
         
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .divider::before {
-            margin-right: 10px;
-        }
-        
-        .divider::after {
-            margin-left: 10px;
-        }
-        
-        .social-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-family: 'Baloo 2', cursive;
+        .data-label {
             font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            color: #475569;
         }
         
-        .social-btn:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-        
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            cursor: pointer;
-        }
-        
-        .floating-label {
-            position: absolute;
-            left: 45px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 16px;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-        
-        .form-input:focus + .floating-label,
-        .form-input:not(:placeholder-shown) + .floating-label {
-            top: -10px;
-            left: 40px;
-            font-size: 12px;
-            background: white;
-            padding: 0 5px;
+        .data-value {
+            font-weight: 700;
             color: var(--primary);
         }
         
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
+        .photon {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffde4d, #ff8c00);
+            box-shadow: 0 0 15px #ff8c00;
         }
         
-        .floating-icon {
-            animation: float 3s ease-in-out infinite;
+        .electron {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #60a5fa, #3b82f6);
+            box-shadow: 0 0 10px #3b82f6;
         }
         
-        .header-bg {
-            background-color: var(--primary); /* Warna ungu solid */
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 16px;
         }
         
-        .guest-btn {
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 9999px;
-            font-size: 14px;
-            transition: all 0.3s ease;
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #64748b;
         }
         
-        .guest-btn:hover {
-            background-color: var(--primary);
-            color: white;
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
         }
     </style>
 </head>
@@ -216,149 +213,286 @@
     <!-- Mobile App Container -->
     <div class="app-container">
         <!-- App Header -->
-        <header class="header-bg p-4 text-white">
+        <header class="bg-gradient-to-r from-primary to-secondary p-4 text-white">
             <div class="flex justify-between items-center">
-                <div class="app-logo">
-                    <div class="app-logo-icon floating-icon">
+                <div class="flex items-center">
+                    <div class="bg-white/20 p-2 rounded-full mr-3">
                         <i class="fas fa-atom"></i>
                     </div>
-                    <h1 class="app-name">TETA SAINS</h1>
+                    <h1 class="text-xl font-bold">Efek Fotolistrik - Fisika Kuantum</h1>
+                </div>
+                <div class="flex items-center">
+                    <button id="back-button" class="bg-white/20 p-2 rounded-full">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
                 </div>
             </div>
         </header>
         
-        <!-- Main Content Area -->
-        <main class="p-6">
-            <!-- Welcome Section -->
-            <section class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-2">Selamat Datang</h2>
-                <p class="text-gray-600">Masuk untuk menjelajahi lab virtual fisika</p>
-            </section>
+        <!-- Simulation Container -->
+        <div class="simulation-container">
+            <canvas id="simulation-canvas"></canvas>
             
-            <!-- Login Form -->
-            <section class="login-card bg-white p-6">
-                <form id="loginForm">
-                    <div class="input-group">
-                        <i class="input-icon fas fa-user"></i>
-                        <input type="text" class="form-input" id="username" placeholder=" " autocomplete="off">
-                        <label for="username" class="floating-label">Username atau Email</label>
+            <!-- Info Panel -->
+            <div class="info-panel">
+                <div class="title">Efek Fotolistrik</div>
+                <div class="explanation">
+                    Fenomena dimana elektron terlepas dari permukaan logam ketika disinari cahaya dengan frekuensi tertentu.
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Frekuensi Cahaya:</span>
+                    <span id="frequency-value" class="data-value">5.5 × 10¹⁴ Hz</span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Energi Foton:</span>
+                    <span id="energy-value" class="data-value">3.64 eV</span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Elektron Terlepas:</span>
+                    <span id="electron-value" class="data-value">12</span>
+                </div>
+                
+                <div class="data-item">
+                    <span class="data-label">Energi Kinetik:</span>
+                    <span id="kinetic-value" class="data-value">1.24 eV</span>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff8c00;"></div>
+                        <span>Foton</span>
                     </div>
-                    
-                    <div class="input-group">
-                        <i class="input-icon fas fa-lock"></i>
-                        <input type="password" class="form-input" id="password" placeholder=" " autocomplete="off">
-                        <label for="password" class="floating-label">Kata Sandi</label>
-                        <span class="toggle-password" id="togglePassword">
-                            <i class="fas fa-eye"></i>
-                        </span>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3b82f6;"></div>
+                        <span>Elektron</span>
                     </div>
-                    
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="remember" class="mr-2 h-4 w-4 text-primary rounded focus:ring-primary">
-                            <label for="remember" class="text-sm text-gray-600">Ingat saya</label>
-                        </div>
-                        <a href="#" class="text-sm text-primary font-semibold">Lupa kata sandi?</a>
-                    </div>
-                    
-                    <button type="submit" class="btn-login mb-6">
-                        Masuk
+                </div>
+            </div>
+            
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="slider-container">
+                    <span class="slider-label">Intensitas Cahaya</span>
+                    <input type="range" id="intensity-slider" min="1" max="100" value="50">
+                    <span class="slider-value" id="intensity-value">50%</span>
+                </div>
+                
+                <div class="slider-container">
+                    <span class="slider-label">Frekuensi Cahaya</span>
+                    <input type="range" id="frequency-slider" min="1" max="100" value="55">
+                    <span class="slider-value" id="frequency-display">5.5×10¹⁴ Hz</span>
+                </div>
+                
+                <div class="slider-container">
+                    <span class="slider-label">Logam Target</span>
+                    <input type="range" id="metal-slider" min="1" max="4" value="2" step="1">
+                    <span class="slider-value" id="metal-value">Natrium</span>
+                </div>
+                
+                <div class="controls-row">
+                    <button id="play-btn" class="btn-control">
+                        <i class="fas fa-play"></i> Mulai
                     </button>
-                    
-                    <div class="divider mb-6">atau lanjutkan dengan</div>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <button type="button" class="social-btn">
-                            <i class="fab fa-google text-red-500 mr-2"></i>
-                            Google
-                        </button>
-                        <button type="button" class="social-btn">
-                            <i class="fab fa-facebook text-blue-600 mr-2"></i>
-                            Facebook
-                        </button>
-                    </div>
-                    
-                    <div class="text-center">
-                        <span class="text-sm text-gray-600">Belum punya akun? </span>
-                        <a href="#" class="text-sm text-primary font-semibold">Daftar Sekarang</a>
-                    </div>
-                </form>
-            </section>
-            
-            <!-- Guest Option -->
-            <section class="text-center mt-6">
-                <p class="text-gray-600 mb-4">Atau jelajahi sebagai tamu</p>
-                <button class="guest-btn">
-                    Lanjutkan sebagai Tamu
-                </button>
-            </section>
-        </main>
+                    <button id="pause-btn" class="btn-control">
+                        <i class="fas fa-pause"></i> Jeda
+                    </button>
+                    <button id="reset-btn" class="btn-control">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Toggle password visibility
-            const togglePassword = document.getElementById('togglePassword');
-            const passwordInput = document.getElementById('password');
-            
-            togglePassword.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                
-                // Toggle eye icon
-                this.querySelector('i').classList.toggle('fa-eye');
-                this.querySelector('i').classList.toggle('fa-eye-slash');
+            // Back button functionality
+            document.getElementById('back-button').addEventListener('click', function() {
+                alert('Kembali ke halaman lab virtual');
+                // In a real app: window.history.back() or navigate to lab page
             });
             
-            // Form submission
-            const loginForm = document.getElementById('loginForm');
+            // Three.js initialization
+            let scene, camera, renderer;
+            let photons = [];
+            let electrons = [];
+            let isPlaying = false;
+            let metalWorkFunction = 2.28; // Work function for Sodium in eV
             
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                
-                // Simple validation
-                if (!username || !password) {
-                    alert('Harap isi semua field');
-                    return;
-                }
-                
-                // Simulate login process
-                const loginBtn = this.querySelector('.btn-login');
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-                loginBtn.disabled = true;
-                
-                setTimeout(function() {
-                    alert('Login berhasil! Selamat datang di TETA SAINS.');
-                    loginBtn.innerHTML = 'Masuk';
-                    loginBtn.disabled = false;
-                    // In a real app, you would redirect here
-                    // window.location.href = 'home.html';
-                }, 1500);
-            });
+            // Metal data (work functions in eV)
+            const metals = [
+                { name: "Cesium", workFunction: 1.95, color: 0xFFD700 },
+                { name: "Natrium", workFunction: 2.28, color: 0xFFA500 },
+                { name: "Seng", workFunction: 4.3, color: 0xC0C0C0 },
+                { name: "Platina", workFunction: 5.65, color: 0xE5E4E2 }
+            ];
             
-            // Add floating label functionality
-            const inputs = document.querySelectorAll('.form-input');
-            
-            inputs.forEach(input => {
-                // Check if input has value on page load (for browser autofill)
-                if (input.value) {
-                    input.nextElementSibling.classList.add('active');
-                }
+            // Initialize Three.js scene
+            function init() {
+                // Create scene
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0xf0f9ff);
                 
-                input.addEventListener('focus', function() {
-                    this.nextElementSibling.classList.add('active');
+                // Create camera
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 15;
+                camera.position.y = 2;
+                
+                // Create renderer
+                renderer = new THREE.WebGLRenderer({ 
+                    canvas: document.getElementById('simulation-canvas'),
+                    antialias: true 
                 });
+                renderer.setSize(window.innerWidth, window.innerHeight);
                 
-                input.addEventListener('blur', function() {
-                    if (!this.value) {
-                        this.nextElementSibling.classList.remove('active');
+                // Add lights
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+                scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+                directionalLight.position.set(5, 5, 5);
+                scene.add(directionalLight);
+                
+                // Create metal surface
+                const metalGeometry = new THREE.BoxGeometry(20, 1, 10);
+                const currentMetal = metals[1]; // Start with Sodium
+                const metalMaterial = new THREE.MeshPhongMaterial({ 
+                    color: currentMetal.color,
+                    shininess: 70,
+                    emissive: 0x333333
+                });
+                const metalSurface = new THREE.Mesh(metalGeometry, metalMaterial);
+                metalSurface.position.y = -5;
+                metalSurface.position.z = -2;
+                scene.add(metalSurface);
+                
+                // Create photon source (light source)
+                const lightGeometry = new THREE.SphereGeometry(1, 16, 16);
+                const lightMaterial = new THREE.MeshBasicMaterial({ color: 0xFF8C00 });
+                const lightSource = new THREE.Mesh(lightGeometry, lightMaterial);
+                lightSource.position.set(-8, 3, 0);
+                scene.add(lightSource);
+                
+                // Add point light for effect
+                const pointLight = new THREE.PointLight(0xFF8C00, 1, 20);
+                pointLight.position.copy(lightSource.position);
+                scene.add(pointLight);
+                
+                // Add axes helper
+                const axesHelper = new THREE.AxesHelper(5);
+                scene.add(axesHelper);
+                axesHelper.visible = false; // Hide in production
+                
+                // Handle window resize
+                window.addEventListener('resize', onWindowResize, false);
+                
+                // Start animation
+                animate();
+            }
+            
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                if (isPlaying) {
+                    // Create new photons based on intensity
+                    const intensity = document.getElementById('intensity-slider').value;
+                    if (Math.random() < intensity / 500) {
+                        createPhoton();
                     }
+                    
+                    // Update photons
+                    updatePhotons();
+                    
+                    // Update electrons
+                    updateElectrons();
+                }
+                
+                renderer.render(scene, camera);
+            }
+            
+            function createPhoton() {
+                const frequency = document.getElementById('frequency-slider').value;
+                const energy = calculatePhotonEnergy(frequency);
+                
+                // Only create photon if energy > work function
+                if (energy < metalWorkFunction) return;
+                
+                const geometry = new THREE.SphereGeometry(0.2, 16, 16);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: energyToColor(energy),
+                    emissive: 0xFF8C00,
+                    emissiveIntensity: 0.5
                 });
-            });
-        });
-    </script>
-</body>
-</html>
+                
+                const photon = new THREE.Mesh(geometry, material);
+                
+                // Start position (from light source)
+                photon.position.set(-8, 3, (Math.random() - 0.5) * 8);
+                
+                // Direction vector (toward metal surface)
+                const targetX = (Math.random() - 0.5) * 10;
+                const targetY = -5;
+                const targetZ = (Math.random() - 0.5) * 8;
+                
+                photon.velocity = new THREE.Vector3(
+                    (targetX - photon.position.x) * 0.02,
+                    (targetY - photon.position.y) * 0.02,
+                    (targetZ - photon.position.z) * 0.02
+                );
+                
+                photon.userData = { energy: energy };
+                
+                scene.add(photon);
+                photons.push(photon);
+            }
+            
+            function updatePhotons() {
+                for (let i = photons.length - 1; i >= 0; i--) {
+                    const photon = photons[i];
+                    photon.position.add(photon.velocity);
+                    
+                    // Check if photon hits the metal surface (y ~ -5)
+                    if (photon.position.y < -4.5) {
+                        // Create electron if photon has enough energy
+                        if (photon.userData.energy >= metalWorkFunction) {
+                            createElectron(photon.position.clone(), photon.userData.energy - metalWorkFunction);
+                            
+                            // Update electron count
+                            const electronCount = document.getElementById('electron-value');
+                            electronCount.textContent = parseInt(electronCount.textContent) + 1;
+                            
+                            // Update kinetic energy display (average)
+                            const kineticDisplay = document.getElementById('kinetic-value');
+                            const currentValue = parseFloat(kineticDisplay.textContent.split(' ')[0]);
+                            // This is simplified for demonstration
+                            kineticDisplay.textContent = (photon.userData.energy - metalWorkFunction).toFixed(2) + ' eV';
+                        }
+                        
+                        // Remove photon
+                        scene.remove(photon);
+                        photons.splice(i, 1);
+                    }
+                    
+                    // Remove photons that go out of bounds
+                    if (photon.position.x > 10 || photon.position.x < -10 || 
+                        photon.position.z > 10 || photon.position.z < -10) {
+                        scene.remove(photon);
+                        photons.splice(i, 1);
+                    }
+                }
+            }
+            
+            function createElectron(position, kineticEnergy) {
+                const geometry = new THREE.SphereGeometry(0.15, 16, 16);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: 0x3b82f6,
+                    emissive: 0x3b82f
