@@ -264,6 +264,12 @@
         .icon {
             font-size: 16px;
         }
+        
+        .warning {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
@@ -328,15 +334,15 @@
                     <div class="property-title">Geometry</div>
                     <div class="property-item">
                         <div class="property-label">Length</div>
-                        <input type="text" class="property-input" value="0.00">
+                        <input type="text" class="property-input" value="0.00" id="lengthValue" readonly>
                     </div>
                     <div class="property-item">
                         <div class="property-label">Width</div>
-                        <input type="text" class="property-input" value="0.00">
+                        <input type="text" class="property-input" value="0.00" id="widthValue" readonly>
                     </div>
                     <div class="property-item">
                         <div class="property-label">Height</div>
-                        <input type="text" class="property-input" value="0.00">
+                        <input type="text" class="property-input" value="0.00" id="heightValue" readonly>
                     </div>
                 </div>
                 
@@ -344,15 +350,15 @@
                     <div class="property-title">Appearance</div>
                     <div class="property-item">
                         <div class="property-label">Color</div>
-                        <input type="color" class="property-input" value="#569cd6" style="height: 24px;">
+                        <input type="color" class="property-input" value="#569cd6" id="shapeColor" style="height: 24px;">
                     </div>
                     <div class="property-item">
                         <div class="property-label">Wireframe</div>
-                        <input type="checkbox" class="property-input" style="width: 16px; height: 16px;">
+                        <input type="checkbox" class="property-input" id="wireframeToggle" style="width: 16px; height: 16px;">
                     </div>
                     <div class="property-item">
                         <div class="property-label">Opacity</div>
-                        <input type="range" class="property-input" min="0" max="100" value="100">
+                        <input type="range" class="property-input" id="opacitySlider" min="0" max="100" value="100">
                     </div>
                 </div>
                 
@@ -360,17 +366,18 @@
                     <div class="property-title">Extrusion</div>
                     <div class="property-item">
                         <div class="property-label">Height</div>
-                        <input type="text" class="property-input" value="5.00" id="extrudeHeight">
+                        <input type="number" class="property-input" value="5.00" id="extrudeHeight" step="0.1" min="0.1" max="50">
                     </div>
                     <div class="property-item">
                         <div class="property-label">Segments</div>
-                        <input type="number" class="property-input" value="1" min="1" max="10">
+                        <input type="number" class="property-input" value="1" id="extrudeSegments" min="1" max="10">
                     </div>
                     <div class="property-item">
                         <div class="property-label">Bevel</div>
-                        <input type="checkbox" class="property-input" style="width: 16px; height: 16px;">
+                        <input type="checkbox" class="property-input" id="bevelEnabled" style="width: 16px; height: 16px;">
                     </div>
-                    <button style="width: 100%; padding: 8px; margin-top: 10px; background: #0078d7; color: white; border: none; border-radius: 3px; cursor: pointer;">Apply Extrusion</button>
+                    <button id="applyExtrude" style="width: 100%; padding: 8px; margin-top: 10px; background: #0078d7; color: white; border: none; border-radius: 3px; cursor: pointer;">Apply Extrusion</button>
+                    <div id="extrudeWarning" class="warning" style="display: none;">Bentuk harus tertutup untuk ekstrusi</div>
                 </div>
             </div>
         </div>
@@ -401,6 +408,7 @@
         let extrudedShape = null;
         let activeTool = 'line';
         let gridHelper, axesHelper;
+        let isShapeClosed = false;
 
         // Inisialisasi aplikasi
         function init() {
@@ -481,6 +489,14 @@
             document.getElementById('frontView').addEventListener('click', setFrontView);
             document.getElementById('rightView').addEventListener('click', setRightView);
             document.getElementById('isoView').addEventListener('click', setIsoView);
+            
+            // Extrusion button
+            document.getElementById('applyExtrude').addEventListener('click', applyExtrusion);
+            
+            // Property controls
+            document.getElementById('wireframeToggle').addEventListener('change', toggleWireframe);
+            document.getElementById('opacitySlider').addEventListener('input', updateOpacity);
+            document.getElementById('shapeColor').addEventListener('input', updateColor);
         }
         
         // Set active tool
@@ -494,15 +510,43 @@
             document.getElementById(tool + 'Tool').classList.add('active');
             
             // Update controls based on tool
-            if (tool === 'orbit') {
-                controls.enabled = true;
-            } else if (tool === 'pan') {
+            if (tool === 'orbit' || tool === 'pan') {
                 controls.enabled = true;
             } else {
                 controls.enabled = false;
             }
             
             updateCommandLine(`${tool} tool selected`);
+            
+            // Jika memilih tool extrude, periksa apakah shape tertutup
+            if (tool === 'extrude' && points.length > 2) {
+                checkIfShapeClosed();
+            }
+        }
+        
+        // Periksa apakah shape tertutup
+        function checkIfShapeClosed() {
+            if (points.length < 3) {
+                isShapeClosed = false;
+                document.getElementById('extrudeWarning').style.display = 'block';
+                return;
+            }
+            
+            // Ambil titik pertama dan terakhir
+            const firstPoint = points[0];
+            const lastPoint = points[points.length - 1];
+            
+            // Hitung jarak antara titik pertama dan terakhir
+            const distance = firstPoint.distanceTo(lastPoint);
+            
+            // Jika jaraknya sangat kecil, dianggap tertutup
+            isShapeClosed = distance < 0.1;
+            
+            if (!isShapeClosed) {
+                document.getElementById('extrudeWarning').style.display = 'block';
+            } else {
+                document.getElementById('extrudeWarning').style.display = 'none';
+            }
         }
         
         // Handle canvas click
@@ -535,13 +579,31 @@
                 drawLine();
                 
                 updateCommandLine(`Point added at ${intersectPoint.x.toFixed(2)}, ${intersectPoint.y.toFixed(2)}`);
+                
+                // Perbarui properti geometri
+                updateGeometryProperties();
             }
         }
         
         // Handle canvas double click
         function onCanvasDoubleClick() {
             if (['line', 'polygon'].includes(activeTool) && points.length > 0) {
-                // Finish drawing
+                // Finish drawing - tutup shape jika mendekati titik awal
+                if (points.length > 2) {
+                    const firstPoint = points[0];
+                    const lastPoint = points[points.length - 1];
+                    const distance = firstPoint.distanceTo(lastPoint);
+                    
+                    // Jika jarak kurang dari 1 unit, tutup shape
+                    if (distance < 2.0) {
+                        points.push(firstPoint.clone());
+                        isShapeClosed = true;
+                        document.getElementById('extrudeWarning').style.display = 'none';
+                        updateCommandLine("Shape closed");
+                    }
+                }
+                
+                drawLine();
                 drawing = false;
                 updateCommandLine(`Shape completed with ${points.length} points`);
             }
@@ -587,8 +649,13 @@
         
         // Ekstrusi garis menjadi bentuk 3D
         function applyExtrusion() {
-            if (points.length < 2) {
-                alert("Gambar setidaknya 2 titik terlebih dahulu!");
+            if (points.length < 3) {
+                alert("Gambar setidaknya 3 titik terlebih dahulu!");
+                return;
+            }
+            
+            if (!isShapeClosed) {
+                alert("Bentuk harus tertutup untuk diekstrusi! Double-click dekat titik awal untuk menutup bentuk.");
                 return;
             }
             
@@ -600,22 +667,38 @@
             }
             
             // Buat bentuk dari titik
-            const shape = new THREE.Shape(points);
+            const shape = new THREE.Shape();
+            shape.moveTo(points[0].x, points[0].y);
+            
+            for (let i = 1; i < points.length; i++) {
+                shape.lineTo(points[i].x, points[i].y);
+            }
             
             // Settings ekstrusi
-            const height = document.getElementById('extrudeHeight').value;
+            const height = parseFloat(document.getElementById('extrudeHeight').value);
+            const segments = parseInt(document.getElementById('extrudeSegments').value);
+            const bevelEnabled = document.getElementById('bevelEnabled').checked;
+            
             const extrudeSettings = {
-                depth: parseFloat(height),
-                bevelEnabled: false
+                depth: height,
+                steps: segments,
+                bevelEnabled: bevelEnabled,
+                bevelThickness: bevelEnabled ? 0.5 : 0,
+                bevelSize: bevelEnabled ? 0.5 : 0,
+                bevelSegments: bevelEnabled ? 3 : 1
             };
             
             // Buat geometri ekstrusi
             const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
             
             // Buat material dengan warna yang dipilih
+            const color = document.getElementById('shapeColor').value;
             const material = new THREE.MeshPhongMaterial({ 
-                color: 0x569cd6,
+                color: color,
                 flatShading: true,
+                transparent: true,
+                opacity: document.getElementById('opacitySlider').value / 100,
+                wireframe: document.getElementById('wireframeToggle').checked,
                 side: THREE.DoubleSide
             });
             
@@ -623,24 +706,72 @@
             extrudedShape = new THREE.Mesh(geometry, material);
             scene.add(extrudedShape);
             
+            // Perbarui properti tinggi
+            document.getElementById('heightValue').value = height.toFixed(2);
+            
             updateCommandLine(`Extrusion applied with height ${height}`);
+        }
+        
+        // Update properti geometri
+        function updateGeometryProperties() {
+            if (points.length < 2) return;
+            
+            // Hitung bounding box
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            
+            for (const point of points) {
+                minX = Math.min(minX, point.x);
+                maxX = Math.max(maxX, point.x);
+                minY = Math.min(minY, point.y);
+                maxY = Math.max(maxY, point.y);
+            }
+            
+            const length = (maxX - minX).toFixed(2);
+            const width = (maxY - minY).toFixed(2);
+            
+            document.getElementById('lengthValue').value = length;
+            document.getElementById('widthValue').value = width;
+        }
+        
+        // Toggle wireframe
+        function toggleWireframe() {
+            if (extrudedShape) {
+                extrudedShape.material.wireframe = document.getElementById('wireframeToggle').checked;
+            }
+        }
+        
+        // Update opacity
+        function updateOpacity() {
+            const opacity = document.getElementById('opacitySlider').value / 100;
+            if (extrudedShape) {
+                extrudedShape.material.opacity = opacity;
+            }
+        }
+        
+        // Update color
+        function updateColor() {
+            const color = document.getElementById('shapeColor').value;
+            if (extrudedShape) {
+                extrudedShape.material.color = new THREE.Color(color);
+            }
         }
         
         // View functions
         function setTopView() {
-            camera.position.set(0, 50, 0);
+            camera.position.set(0, 50, 0.001); // Sedikit offset Z untuk menghindari gimbal lock
             camera.lookAt(0, 0, 0);
             updateCommandLine("Top view activated");
         }
         
         function setFrontView() {
-            camera.position.set(0, 0, 50);
+            camera.position.set(0, 0.001, 50); // Sedikit offset Y untuk menghindari gimbal lock
             camera.lookAt(0, 0, 0);
             updateCommandLine("Front view activated");
         }
         
         function setRightView() {
-            camera.position.set(50, 0, 0);
+            camera.position.set(50, 0.001, 0.001); // Sedikit offset Y dan Z
             camera.lookAt(0, 0, 0);
             updateCommandLine("Right view activated");
         }
