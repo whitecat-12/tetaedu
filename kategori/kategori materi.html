@@ -3,178 +3,530 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platform 3D Sederhana</title>
+    <title>AutoCAD Sederhana dengan Three.js</title>
     <style>
-        body { 
-            margin: 0; 
-            overflow: hidden; 
-            font-family: Arial, sans-serif;
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
         }
-        #canvas-container { 
-            width: 100vw; 
-            height: 100vh; 
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
-        #toolbar {
+        
+        header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+        }
+        
+        h1 span {
+            color: #4cc9f0;
+            margin-left: 8px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .toolbar {
+            width: 280px;
+            background: rgba(30, 30, 46, 0.8);
+            padding: 20px;
+            border-right: 1px solid #39394a;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        #canvas {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.8);
+            width: 100%;
+            height: 100%;
+        }
+        
+        .panel {
+            background: rgba(25, 25, 42, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #72efdd;
+            border-bottom: 1px solid #4a4a6a;
+            padding-bottom: 8px;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #4895ef 0%, #4361ee 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button i {
+            font-size: 16px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        label {
+            font-size: 14px;
+            color: #a0a0c0;
+        }
+        
+        input {
             padding: 10px;
             border-radius: 5px;
-        }
-        button {
-            padding: 8px 12px;
-            margin: 5px;
-            border: none;
-            background: #4CAF50;
+            border: 1px solid #4a4a6a;
+            background: rgba(35, 35, 52, 0.8);
             color: white;
-            border-radius: 4px;
-            cursor: pointer;
         }
-        button:hover {
-            background: #45a049;
+        
+        input:focus {
+            outline: none;
+            border-color: #4361ee;
         }
-        #status {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 3px;
+        
+        .status-bar {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #a0a0c0;
+        }
+        
+        .instructions {
+            background: rgba(25, 25, 42, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin: 10px 0 0 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .active {
+            background: linear-gradient(135deg, #f72585 0%, #b5179e 100%) !important;
+        }
+        
+        .shape-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .shape-controls button {
+            font-size: 12px;
+            padding: 8px 10px;
         }
     </style>
-</head>
-<body>
-    <div id="toolbar">
-        <button id="add-cube">Tambah Kubus</button>
-        <button id="add-sphere">Tambah Sphere</button>
-        <button id="pan-mode">Mode Pan</button>
-        <button id="rotate-mode">Mode Rotate</button>
-        <button id="reset-view">Reset View</button>
-    </div>
-    
-    <div id="canvas-container"></div>
-    
-    <div id="status">Siap: Mode Rotate</div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span>3D</span> AutoCAD Sederhana</h1>
+        </header>
+        
+        <div class="main-content">
+            <div class="toolbar">
+                <div class="panel">
+                    <h2>Alat Gambar</h2>
+                    <div class="button-group">
+                        <button id="drawMode">✏️ Mode Gambar</button>
+                        <button id="extrudeMode">🧊 Ekstrusi ke 3D</button>
+                        <button id="resetButton">🗑️ Reset Canvas</button>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h2>Pengaturan Ekstrusi</h2>
+                    <div class="input-group">
+                        <label for="extrudeHeight">Tinggi Ekstrusi:</label>
+                        <input type="range" id="extrudeHeight" min="1" max="20" value="5">
+                        <span id="heightValue">5 unit</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="shapeColor">Warna Bentuk:</label>
+                        <input type="color" id="shapeColor" value="#4361ee">
+                    </div>
+                    <button id="applyExtrude">Terapkan Ekstrusi</button>
+                </div>
+                
+                <div class="panel">
+                    <h2>Kontrol Tampilan</h2>
+                    <div class="shape-controls">
+                        <button id="wireframe">🔲 Wireframe</button>
+                        <button id="solid">🔳 Solid</button>
+                        <button id="rotate">🔄 Rotate</button>
+                        <button id="zoomFit">🔍 Zoom Fit</button>
+                    </div>
+                </div>
+                
+                <div class="instructions panel">
+                    <h2>Cara Menggunakan</h2>
+                    <ul>
+                        <li>Klik <strong>Mode Gambar</strong> untuk mulai menggambar garis</li>
+                        <li>Klik pada canvas untuk menempatkan titik</li>
+                        <li>Klik <strong>Ekstrusi ke 3D</strong> lalu <strong>Terapkan Ekstrusi</strong> untuk membuat bentuk 3D</li>
+                        <li>Gunakan mouse untuk mengubah sudut pandang (drag untuk rotate, scroll untuk zoom)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <div id="canvas"></div>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div id="status">Status: Siap menggambar</div>
+            <div id="coord">X: 0, Y: 0, Z: 0</div>
+        </div>
+    </div>
+
     <script>
-        // Inisialisasi scene, camera, dan renderer
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xf0f0f0);
-        
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 5;
-        
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-        
-        // Kontrol orbit untuk navigasi
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.25;
-        
-        // Pencahayaan
-        const ambientLight = new THREE.AmbientLight(0x404040);
-        scene.add(ambientLight);
-        
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        directionalLight.position.set(1, 1, 1);
-        scene.add(directionalLight);
-        
-        // Grid helper
-        const gridHelper = new THREE.GridHelper(10, 10);
-        scene.add(gridHelper);
-        
-        // Axis helper
-        const axesHelper = new THREE.AxesHelper(5);
-        scene.add(axesHelper);
-        
-        // Variabel untuk interaksi
-        let selectedObject = null;
-        let isPanMode = false;
-        
-        // Fungsi untuk menambah objek kubus
-        function addCube() {
-            const geometry = new THREE.BoxGeometry(1, 1, 1);
-            const material = new THREE.MeshPhongMaterial({ 
-                color: Math.random() * 0xffffff,
-                transparent: true,
-                opacity: 0.8
-            });
-            const cube = new THREE.Mesh(geometry, material);
-            cube.position.set(
-                (Math.random() - 0.5) * 5,
-                (Math.random() - 0.5) * 5,
-                (Math.random() - 0.5) * 5
-            );
-            scene.add(cube);
-            return cube;
+        // Variabel global
+        let scene, camera, renderer, controls;
+        let drawing = false;
+        let points = [];
+        let line = null;
+        let extrudedShape = null;
+        let drawMode = true;
+        let extrudeMode = false;
+
+        // Inisialisasi aplikasi
+        function init() {
+            // Setup scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            
+            // Setup camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 15;
+            camera.position.y = 10;
+            camera.lookAt(0, 0, 0);
+            
+            // Setup renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(document.getElementById('canvas').offsetWidth, document.getElementById('canvas').offsetHeight);
+            document.getElementById('canvas').appendChild(renderer.domElement);
+            
+            // Setup controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Add grid helper
+            const gridHelper = new THREE.GridHelper(30, 30, 0x39394a, 0x25253a);
+            scene.add(gridHelper);
+            
+            // Add axes helper
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            // Add lights
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Event listeners
+            setupEventListeners();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start animation loop
+            animate();
+            
+            updateStatus();
         }
         
-        // Fungsi untuk menambah objek sphere
-        function addSphere() {
-            const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-            const material = new THREE.MeshPhongMaterial({ 
-                color: Math.random() * 0xffffff,
-                transparent: true,
-                opacity: 0.8
-            });
-            const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.set(
-                (Math.random() - 0.5) * 5,
-                (Math.random() - 0.5) * 5,
-                (Math.random() - 0.5) * 5
-            );
-            scene.add(sphere);
-            return sphere;
+        // Setup event listeners
+        function setupEventListeners() {
+            // Canvas click event
+            renderer.domElement.addEventListener('click', onCanvasClick);
+            renderer.domElement.addEventListener('mousemove', onCanvasMouseMove);
+            
+            // Button events
+            document.getElementById('drawMode').addEventListener('click', activateDrawMode);
+            document.getElementById('extrudeMode').addEventListener('click', activateExtrudeMode);
+            document.getElementById('resetButton').addEventListener('click', resetCanvas);
+            document.getElementById('applyExtrude').addEventListener('click', applyExtrusion);
+            document.getElementById('extrudeHeight').addEventListener('input', updateExtrudeHeightValue);
+            document.getElementById('wireframe').addEventListener('click', toggleWireframe);
+            document.getElementById('solid').addEventListener('click', toggleSolid);
+            document.getElementById('rotate').addEventListener('click', resetRotation);
+            document.getElementById('zoomFit').addEventListener('click', zoomToFit);
         }
         
-        // Event listeners untuk tombol toolbar
-        document.getElementById('add-cube').addEventListener('click', () => {
-            addCube();
-        });
+        // Aktifkan mode gambar
+        function activateDrawMode() {
+            drawMode = true;
+            extrudeMode = false;
+            document.getElementById('drawMode').classList.add('active');
+            document.getElementById('extrudeMode').classList.remove('active');
+            updateStatus();
+        }
         
-        document.getElementById('add-sphere').addEventListener('click', () => {
-            addSphere();
-        });
+        // Aktifkan mode ekstrusi
+        function activateExtrudeMode() {
+            drawMode = false;
+            extrudeMode = true;
+            document.getElementById('extrudeMode').classList.add('active');
+            document.getElementById('drawMode').classList.remove('active');
+            updateStatus();
+        }
         
-        document.getElementById('pan-mode').addEventListener('click', () => {
-            isPanMode = true;
-            controls.enableRotate = false;
-            document.getElementById('status').textContent = 'Siap: Mode Pan';
-        });
+        // Handle canvas click
+        function onCanvasClick(event) {
+            if (drawMode) {
+                // Dapatkan posisi mouse dalam koordinat Three.js
+                const mouse = new THREE.Vector2();
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                // Raycasting untuk menentukan posisi di grid
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(mouse, camera);
+                
+                // Hitung perpotongan dengan grid (plane XY)
+                const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+                const intersectPoint = new THREE.Vector3();
+                raycaster.ray.intersectPlane(plane, intersectPoint);
+                
+                // Tambahkan titik
+                points.push(intersectPoint.clone());
+                
+                // Gambar garis
+                drawLine();
+            }
+        }
         
-        document.getElementById('rotate-mode').addEventListener('click', () => {
-            isPanMode = false;
-            controls.enableRotate = true;
-            document.getElementById('status').textContent = 'Siap: Mode Rotate';
-        });
+        // Update koordinat mouse
+        function onCanvasMouseMove(event) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            
+            // Untuk demo saja, koordinat 3D sebenarnya lebih kompleks
+            document.getElementById('coord').textContent = `X: ${Math.round(mouseX/10)}, Y: ${Math.round((rect.height - mouseY)/10)}, Z: 0`;
+        }
         
-        document.getElementById('reset-view').addEventListener('click', () => {
-            camera.position.set(0, 0, 5);
+        // Gambar garis dari titik-titik
+        function drawLine() {
+            // Hapus garis lama jika ada
+            if (line) {
+                scene.remove(line);
+                line.geometry.dispose();
+                line.material.dispose();
+            }
+            
+            if (points.length < 2) return;
+            
+            // Buat geometri garis
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({ color: 0x4361ee, linewidth: 2 });
+            line = new THREE.Line(geometry, material);
+            scene.add(line);
+        }
+        
+        // Ekstrusi garis menjadi bentuk 3D
+        function applyExtrusion() {
+            if (points.length < 2) {
+                alert("Gambar setidaknya 2 titik terlebih dahulu!");
+                return;
+            }
+            
+            // Hapus bentuk lama jika ada
+            if (extrudedShape) {
+                scene.remove(extrudedShape);
+                extrudedShape.geometry.dispose();
+                extrudedShape.material.dispose();
+            }
+            
+            // Buat bentuk dari titik
+            const shape = new THREE.Shape(points);
+            
+            // Settings ekstrusi
+            const height = document.getElementById('extrudeHeight').value;
+            const extrudeSettings = {
+                depth: parseFloat(height),
+                bevelEnabled: false
+            };
+            
+            // Buat geometri ekstrusi
+            const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            
+            // Buat material dengan warna yang dipilih
+            const color = document.getElementById('shapeColor').value;
+            const material = new THREE.MeshPhongMaterial({ 
+                color: color,
+                flatShading: true,
+                side: THREE.DoubleSide
+            });
+            
+            // Buat mesh dan tambahkan ke scene
+            extrudedShape = new THREE.Mesh(geometry, material);
+            scene.add(extrudedShape);
+            
+            // Pindah ke mode ekstrusi
+            activateExtrudeMode();
+        }
+        
+        // Reset canvas
+        function resetCanvas() {
+            // Hapus garis dan bentuk
+            if (line) {
+                scene.remove(line);
+                line.geometry.dispose();
+                line.material.dispose();
+                line = null;
+            }
+            
+            if (extrudedShape) {
+                scene.remove(extrudedShape);
+                extrudedShape.geometry.dispose();
+                extrudedShape.material.dispose();
+                extrudedShape = null;
+            }
+            
+            // Reset titik
+            points = [];
+            
+            // Kembali ke mode gambar
+            activateDrawMode();
+        }
+        
+        // Update nilai tinggi ekstrusi
+        function updateExtrudeHeightValue() {
+            const height = document.getElementById('extrudeHeight').value;
+            document.getElementById('heightValue').textContent = height + " unit";
+        }
+        
+        // Toggle wireframe
+        function toggleWireframe() {
+            if (extrudedShape) {
+                extrudedShape.material.wireframe = true;
+            }
+        }
+        
+        // Toggle solid
+        function toggleSolid() {
+            if (extrudedShape) {
+                extrudedShape.material.wireframe = false;
+            }
+        }
+        
+        // Reset rotasi
+        function resetRotation() {
             controls.reset();
-        });
+        }
         
-        // Fungsi untuk menangani resize window
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
+        // Zoom to fit
+        function zoomToFit() {
+            // Untuk demo sederhana, reset kamera
+            camera.position.set(0, 10, 15);
+            camera.lookAt(0, 0, 0);
+            controls.update();
+        }
+        
+        // Update status
+        function updateStatus() {
+            let status = "Status: ";
+            if (drawMode) {
+                status += "Mode Gambar - Klik pada canvas untuk menambahkan titik";
+            } else if (extrudeMode) {
+                status += "Mode Ekstrusi - Atur pengaturan dan terapkan ekstrusi";
+            }
+            document.getElementById('status').textContent = status;
+        }
+        
+        // Handle window resize
+        function onWindowResize() {
+            camera.aspect = document.getElementById('canvas').offsetWidth / document.getElementById('canvas').offsetHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+            renderer.setSize(document.getElementById('canvas').offsetWidth, document.getElementById('canvas').offsetHeight);
+        }
         
-        // Fungsi animasi
+        // Animation loop
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
         }
         
-        animate();
+        // Inisialisasi aplikasi saat halaman dimuat
+        window.onload = init;
     </script>
 </body>
 </html>
