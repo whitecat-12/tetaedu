@@ -271,53 +271,37 @@
             margin-top: 5px;
         }
         
-        /* OSNAP Controls */
-        .osnap-controls {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+        .close-shape-btn {
+            width: 100%;
+            padding: 8px;
             margin-top: 10px;
-        }
-        
-        .osnap-button {
-            padding: 6px;
-            background-color: #323233;
-            border: 1px solid #3e3e42;
-            color: #cccccc;
+            background: #43a047;
+            color: white;
+            border: none;
             border-radius: 3px;
             cursor: pointer;
-            font-size: 12px;
-            text-align: center;
+            font-weight: bold;
         }
         
-        .osnap-button.active {
-            background-color: #0078d7;
-            color: #ffffff;
-            border-color: #005a9e;
+        .close-shape-btn:hover {
+            background: #388e3c;
         }
         
-        .snap-marker {
+        .close-shape-btn:disabled {
+            background: #616161;
+            cursor: not-allowed;
+        }
+        
+        .auto-close-hint {
+            display: none;
             position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: #ff6b6b;
-            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
             pointer-events: none;
             z-index: 100;
-            transform: translate(-50%, -50%);
-            display: none;
-        }
-        
-        .snap-tooltip {
-            position: absolute;
-            background-color: #323233;
-            color: #ffffff;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-size: 11px;
-            pointer-events: none;
-            z-index: 101;
-            display: none;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -363,8 +347,7 @@
         <!-- Canvas Area -->
         <div class="canvas-container">
             <div id="canvas"></div>
-            <div class="snap-marker" id="snapMarker"></div>
-            <div class="snap-tooltip" id="snapTooltip"></div>
+            <div id="autoCloseHint" class="auto-close-hint">Double-click to close shape</div>
             <div class="viewport-controls">
                 <button class="view-button" title="Top View" id="topView">↑</button>
                 <button class="view-button" title="Front View" id="frontView">↓</button>
@@ -382,15 +365,10 @@
             </div>
             <div class="panel-content">
                 <div class="property-group">
-                    <div class="property-title">Object Snap (OSNAP)</div>
-                    <div class="osnap-controls">
-                        <button class="osnap-button active" data-snap="endpoint">Endpoint</button>
-                        <button class="osnap-button" data-snap="midpoint">Midpoint</button>
-                        <button class="osnap-button" data-snap="center">Center</button>
-                        <button class="osnap-button" data-snap="intersection">Intersection</button>
-                        <button class="osnap-button" data-snap="perpendicular">Perpendicular</button>
-                        <button class="osnap-button" data-snap="nearest">Nearest</button>
-                    </div>
+                    <div class="property-title">Shape Controls</div>
+                    <button id="closeShapeBtn" class="close-shape-btn" disabled>Close Shape</button>
+                    <button id="finishShapeBtn" class="close-shape-btn" style="background: #1976d2; margin-top: 8px;" disabled>Finish Drawing</button>
+                    <div id="extrudeWarning" class="warning" style="display: none; margin-top: 10px;">Bentuk harus tertutup untuk ekstrusi</div>
                 </div>
                 
                 <div class="property-group">
@@ -440,7 +418,6 @@
                         <input type="checkbox" class="property-input" id="bevelEnabled" style="width: 16px; height: 16px;">
                     </div>
                     <button id="applyExtrude" style="width: 100%; padding: 8px; margin-top: 10px; background: #0078d7; color: white; border: none; border-radius: 3px; cursor: pointer;">Apply Extrusion</button>
-                    <div id="extrudeWarning" class="warning" style="display: none;">Bentuk harus tertutup untuk ekstrusi</div>
                 </div>
             </div>
         </div>
@@ -449,7 +426,7 @@
     <!-- Command Line -->
     <div class="command-line">
         <span class="command-prefix">Command:</span>
-        <span id="commandText">Ready</span>
+        <span id="commandText">Ready - Click to start drawing</span>
     </div>
     
     <!-- Status Bar -->
@@ -459,7 +436,7 @@
             <span>Y: 0.00</span>
             <span>Z: 0.00</span>
         </div>
-        <div id="osnapStatus">OSNAP: Endpoint</div>
+        <div>Ortho | Snap | Grid</div>
     </div>
 
     <script>
@@ -472,9 +449,7 @@
         let activeTool = 'line';
         let gridHelper, axesHelper;
         let isShapeClosed = false;
-        let activeSnaps = new Set(['endpoint']);
-        let snapMarker = document.getElementById('snapMarker');
-        let snapTooltip = document.getElementById('snapTooltip');
+        let closeHint = document.getElementById('autoCloseHint');
 
         // Inisialisasi aplikasi
         function init() {
@@ -527,8 +502,7 @@
             // Start animation loop
             animate();
             
-            updateCommandLine("Ready");
-            updateOsnapStatus();
+            updateCommandLine("Ready - Click to start drawing");
         }
         
         // Setup event listeners
@@ -560,32 +534,14 @@
             // Extrusion button
             document.getElementById('applyExtrude').addEventListener('click', applyExtrusion);
             
+            // Shape control buttons
+            document.getElementById('closeShapeBtn').addEventListener('click', closeShape);
+            document.getElementById('finishShapeBtn').addEventListener('click', finishDrawing);
+            
             // Property controls
             document.getElementById('wireframeToggle').addEventListener('change', toggleWireframe);
             document.getElementById('opacitySlider').addEventListener('input', updateOpacity);
             document.getElementById('shapeColor').addEventListener('input', updateColor);
-            
-            // OSNAP buttons
-            document.querySelectorAll('.osnap-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const snapType = e.target.dataset.snap;
-                    e.target.classList.toggle('active');
-                    
-                    if (e.target.classList.contains('active')) {
-                        activeSnaps.add(snapType);
-                    } else {
-                        activeSnaps.delete(snapType);
-                    }
-                    
-                    updateOsnapStatus();
-                });
-            });
-        }
-        
-        // Update OSNAP status display
-        function updateOsnapStatus() {
-            const activeList = Array.from(activeSnaps).join(', ');
-            document.getElementById('osnapStatus').textContent = `OSNAP: ${activeList}`;
         }
         
         // Set active tool
@@ -641,6 +597,19 @@
         // Handle canvas click
         function onCanvasClick(event) {
             if (['line', 'rect', 'circle', 'polygon'].includes(activeTool)) {
+                if (!drawing) {
+                    // Memulai gambar baru
+                    drawing = true;
+                    points = [];
+                    if (line) {
+                        scene.remove(line);
+                        line.geometry.dispose();
+                        line.material.dispose();
+                        line = null;
+                    }
+                    updateCommandLine("Drawing started - Click to add points");
+                }
+                
                 // Dapatkan posisi mouse dalam koordinat Three.js
                 const mouse = new THREE.Vector2();
                 const rect = renderer.domElement.getBoundingClientRect();
@@ -653,21 +622,12 @@
                 
                 // Hitung perpotongan dengan grid (plane XY)
                 const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-                let intersectPoint = new THREE.Vector3();
+                const intersectPoint = new THREE.Vector3();
                 raycaster.ray.intersectPlane(plane, intersectPoint);
                 
-                // Terapkan OSNAP jika ada
-                const snappedPoint = applyOsnap(intersectPoint);
-                if (snappedPoint) {
-                    intersectPoint = snappedPoint.point;
-                    showSnapMarker(snappedPoint.point, snappedPoint.type);
-                } else {
-                    hideSnapMarker();
-                    // Bulatkan ke grid terdekat (snap to grid)
-                    intersectPoint.x = Math.round(intersectPoint.x);
-                    intersectPoint.y = Math.round(intersectPoint.y);
-                }
-                
+                // Bulatkan ke grid terdekat (snap to grid)
+                intersectPoint.x = Math.round(intersectPoint.x);
+                intersectPoint.y = Math.round(intersectPoint.y);
                 intersectPoint.z = 0;
                 
                 // Tambahkan titik
@@ -676,6 +636,12 @@
                 // Gambar garis
                 drawLine();
                 
+                // Aktifkan tombol close shape jika ada cukup titik
+                if (points.length >= 3) {
+                    document.getElementById('closeShapeBtn').disabled = false;
+                    document.getElementById('finishShapeBtn').disabled = false;
+                }
+                
                 updateCommandLine(`Point added at ${intersectPoint.x.toFixed(2)}, ${intersectPoint.y.toFixed(2)}`);
                 
                 // Perbarui properti geometri
@@ -683,165 +649,29 @@
             }
         }
         
-        // Terapkan OSNAP ke titik
-        function applyOsnap(point) {
-            if (activeSnaps.size === 0) return null;
-            
-            const snapDistance = 1.5; // Jarak snap dalam unit
-            let closestSnap = null;
-            let minDistance = Infinity;
-            
-            // Cek endpoint (titik akhir dari garis)
-            if (activeSnaps.has('endpoint') && points.length > 0) {
-                const lastPoint = points[points.length - 1];
-                const distance = point.distanceTo(lastPoint);
-                
-                if (distance < snapDistance && distance < minDistance) {
-                    minDistance = distance;
-                    closestSnap = { point: lastPoint.clone(), type: 'Endpoint' };
-                }
-            }
-            
-            // Cek midpoint (titik tengah dari garis)
-            if (activeSnaps.has('midpoint') && points.length >= 2) {
-                for (let i = 0; i < points.length - 1; i++) {
-                    const midpoint = new THREE.Vector3()
-                        .addVectors(points[i], points[i + 1])
-                        .multiplyScalar(0.5);
-                    
-                    const distance = point.distanceTo(midpoint);
-                    
-                    if (distance < snapDistance && distance < minDistance) {
-                        minDistance = distance;
-                        closestSnap = { point: midpoint, type: 'Midpoint' };
-                    }
-                }
-            }
-            
-            // Cek center (titik pusat dari bentuk)
-            if (activeSnaps.has('center') && points.length >= 3) {
-                const center = new THREE.Vector3();
-                points.forEach(p => center.add(p));
-                center.divideScalar(points.length);
-                
-                const distance = point.distanceTo(center);
-                
-                if (distance < snapDistance && distance < minDistance) {
-                    minDistance = distance;
-                    closestSnap = { point: center, type: 'Center' };
-                }
-            }
-            
-            // Cek intersection (perpotongan garis)
-            if (activeSnaps.has('intersection') && points.length >= 4) {
-                for (let i = 0; i < points.length - 2; i++) {
-                    for (let j = i + 2; j < points.length - 1; j++) {
-                        const intersection = lineIntersection(
-                            points[i], points[i + 1],
-                            points[j], points[j + 1]
-                        );
-                        
-                        if (intersection) {
-                            const distance = point.distanceTo(intersection);
-                            
-                            if (distance < snapDistance && distance < minDistance) {
-                                minDistance = distance;
-                                closestSnap = { point: intersection, type: 'Intersection' };
-                            }
-                        }
-                    }
-                }
-            }
-            
-            // Cek grid intersection (perpotongan dengan grid)
-            if (activeSnaps.has('grid')) {
-                const gridX = Math.round(point.x);
-                const gridY = Math.round(point.y);
-                const gridPoint = new THREE.Vector3(gridX, gridY, 0);
-                
-                const distance = point.distanceTo(gridPoint);
-                
-                if (distance < snapDistance && distance < minDistance) {
-                    minDistance = distance;
-                    closestSnap = { point: gridPoint, type: 'Grid' };
-                }
-            }
-            
-            return closestSnap;
-        }
-        
-        // Hitung perpotongan dua garis
-        function lineIntersection(p1, p2, p3, p4) {
-            // Hitung denominator
-            const denominator = ((p4.y - p3.y) * (p2.x - p1.x)) - ((p4.x - p3.x) * (p2.y - p1.y));
-            
-            // Jika garis sejajar
-            if (denominator === 0) return null;
-            
-            const ua = (((p4.x - p3.x) * (p1.y - p3.y)) - ((p4.y - p3.y) * (p1.x - p3.x))) / denominator;
-            const ub = (((p2.x - p1.x) * (p1.y - p3.y)) - ((p2.y - p1.y) * (p1.x - p3.x))) / denominator;
-            
-            // Jika perpotongan berada di luar segmen garis
-            if (ua < 0 || ua > 1 || ub < 0 || ub > 1) return null;
-            
-            // Hitung titik perpotongan
-            return new THREE.Vector3(
-                p1.x + (ua * (p2.x - p1.x)),
-                p1.y + (ua * (p2.y - p1.y)),
-                0
-            );
-        }
-        
-        // Tampilkan marker OSNAP
-        function showSnapMarker(point, type) {
-            // Konversi koordinat 3D ke koordinat layar
-            const vector = point.clone();
-            vector.project(camera);
-            
-            const rect = renderer.domElement.getBoundingClientRect();
-            const x = (vector.x * 0.5 + 0.5) * rect.width;
-            const y = (-(vector.y * 0.5 + 0.5) + 1) * rect.height;
-            
-            // Tampilkan marker
-            snapMarker.style.left = `${x}px`;
-            snapMarker.style.top = `${y}px`;
-            snapMarker.style.display = 'block';
-            
-            // Tampilkan tooltip
-            snapTooltip.style.left = `${x + 15}px`;
-            snapTooltip.style.top = `${y - 15}px`;
-            snapTooltip.textContent = type;
-            snapTooltip.style.display = 'block';
-        }
-        
-        // Sembunyikan marker OSNAP
-        function hideSnapMarker() {
-            snapMarker.style.display = 'none';
-            snapTooltip.style.display = 'none';
-        }
-        
         // Handle canvas double click
         function onCanvasDoubleClick() {
             if (['line', 'polygon'].includes(activeTool) && points.length > 0) {
-                // Finish drawing - tutup shape jika mendekati titik awal
-                if (points.length > 2) {
-                    const firstPoint = points[0];
-                    const lastPoint = points[points.length - 1];
-                    const distance = firstPoint.distanceTo(lastPoint);
-                    
-                    // Jika jarak kurang dari 1 unit, tutup shape
-                    if (distance < 2.0) {
-                        points.push(firstPoint.clone());
-                        isShapeClosed = true;
-                        document.getElementById('extrudeWarning').style.display = 'none';
-                        updateCommandLine("Shape closed");
-                    }
-                }
-                
-                drawLine();
-                drawing = false;
-                updateCommandLine(`Shape completed with ${points.length} points`);
+                closeShape();
             }
+        }
+        
+        // Tutup shape
+        function closeShape() {
+            if (points.length > 2) {
+                // Tambahkan titik pertama ke akhir untuk menutup shape
+                points.push(points[0].clone());
+                isShapeClosed = true;
+                document.getElementById('extrudeWarning').style.display = 'none';
+                drawLine();
+                updateCommandLine("Shape closed");
+            }
+        }
+        
+        // Selesaikan gambar
+        function finishDrawing() {
+            drawing = false;
+            updateCommandLine(`Drawing finished with ${points.length} points`);
         }
         
         // Update koordinat mouse
@@ -850,37 +680,23 @@
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
             
-            // Dapatkan posisi mouse dalam koordinat Three.js
-            const mouse = new THREE.Vector2();
-            mouse.x = (mouseX / rect.width) * 2 - 1;
-            mouse.y = - (mouseY / rect.height) * 2 + 1;
-            
-            // Raycasting untuk menentukan posisi di grid
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
-            
-            // Hitung perpotongan dengan grid (plane XY)
-            const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-            let intersectPoint = new THREE.Vector3();
-            raycaster.ray.intersectPlane(plane, intersectPoint);
-            
-            // Terapkan OSNAP jika ada
-            const snappedPoint = applyOsnap(intersectPoint);
-            if (snappedPoint) {
-                intersectPoint = snappedPoint.point;
-                showSnapMarker(snappedPoint.point, snappedPoint.type);
+            // Tampilkan petunjuk penutupan bentuk jika sedang menggambar
+            if (drawing && points.length > 2) {
+                closeHint.style.display = 'block';
+                closeHint.style.left = (mouseX + 10) + 'px';
+                closeHint.style.top = (mouseY - 30) + 'px';
             } else {
-                hideSnapMarker();
-                // Bulatkan ke grid terdekat (snap to grid)
-                intersectPoint.x = Math.round(intersectPoint.x);
-                intersectPoint.y = Math.round(intersectPoint.y);
+                closeHint.style.display = 'none';
             }
             
             // Untuk demo saja, koordinat 3D sebenarnya lebih kompleks
+            const x = (mouseX / rect.width) * 50 - 25;
+            const y = -((mouseY / rect.height) * 50 - 25);
+            
             document.querySelector('.coords').innerHTML = `
-                <span>X: ${intersectPoint.x.toFixed(2)}</span>
-                <span>Y: ${intersectPoint.y.toFixed(2)}</span>
-                <span>Z: ${intersectPoint.z.toFixed(2)}</span>
+                <span>X: ${x.toFixed(2)}</span>
+                <span>Y: ${y.toFixed(2)}</span>
+                <span>Z: 0.00</span>
             `;
         }
         
@@ -913,7 +729,7 @@
             }
             
             if (!isShapeClosed) {
-                alert("Bentuk harus tertutup untuk diekstrusi! Double-click dekat titik awal untuk menutup bentuk.");
+                alert("Bentuk harus tertutup untuk diekstrusi! Gunakan tombol 'Close Shape' atau double-click untuk menutup bentuk.");
                 return;
             }
             
