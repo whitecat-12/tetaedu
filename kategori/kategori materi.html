@@ -3,63 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoCAD Sederhana dengan Three.js</title>
+    <title>AutoCAD-like 3D Editor</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
-            min-height: 100vh;
-            overflow: hidden;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
         
-        .container {
+        body {
+            background-color: #2d2d30;
+            color: #cccccc;
+            overflow: hidden;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
         }
         
-        header {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            z-index: 10;
-        }
-        
-        h1 {
-            margin: 0;
-            font-size: 24px;
+        /* Header Styles */
+        .header {
+            background-color: #323233;
+            height: 48px;
             display: flex;
             align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #3e3e42;
         }
         
-        h1 span {
-            color: #4cc9f0;
-            margin-left: 8px;
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-right: 30px;
         }
         
-        .main-content {
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #0078d7 0%, #1e8cde 100%);
+            border-radius: 4px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 15px;
+        }
+        
+        .menu-bar {
+            display: flex;
+            height: 100%;
+        }
+        
+        .menu-item {
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            cursor: pointer;
+            font-size: 13px;
+            color: #cccccc;
+        }
+        
+        .menu-item:hover {
+            background-color: #3e3e42;
+            color: #ffffff;
+        }
+        
+        /* Main Content */
+        .main-container {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
         
+        /* Toolbar */
         .toolbar {
-            width: 280px;
-            background: rgba(30, 30, 46, 0.8);
-            padding: 20px;
-            border-right: 1px solid #39394a;
+            width: 64px;
+            background-color: #333337;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            align-items: center;
+            padding: 16px 0;
+            border-right: 1px solid #3e3e42;
+        }
+        
+        .tool-button {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #cccccc;
+            font-size: 20px;
+            background-color: transparent;
+            border: none;
+        }
+        
+        .tool-button:hover {
+            background-color: #3e3e42;
+            color: #ffffff;
+        }
+        
+        .tool-button.active {
+            background-color: #0078d7;
+            color: #ffffff;
+        }
+        
+        /* Right Panel */
+        .right-panel {
+            width: 320px;
+            background-color: #252526;
+            border-left: 1px solid #3e3e42;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid #3e3e42;
+        }
+        
+        .panel-tab {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #cccccc;
+        }
+        
+        .panel-tab.active {
+            color: #ffffff;
+            background-color: #2d2d30;
+            border-bottom: 2px solid #0078d7;
+        }
+        
+        .panel-content {
+            flex: 1;
+            padding: 16px;
             overflow-y: auto;
         }
         
+        .property-group {
+            margin-bottom: 20px;
+        }
+        
+        .property-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #cccccc;
+        }
+        
+        .property-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .property-label {
+            width: 100px;
+            font-size: 12px;
+            color: #969696;
+        }
+        
+        .property-input {
+            flex: 1;
+            background-color: #3c3c3c;
+            border: 1px solid #464647;
+            color: #cccccc;
+            padding: 4px 8px;
+            border-radius: 3px;
+        }
+        
+        /* Canvas Area */
         .canvas-container {
             flex: 1;
             position: relative;
+            background-color: #1e1e1e;
+            overflow: hidden;
         }
         
         #canvas {
@@ -68,186 +199,197 @@
             height: 100%;
         }
         
-        .panel {
-            background: rgba(25, 25, 42, 0.8);
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-        
-        h2 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #72efdd;
-            border-bottom: 1px solid #4a4a6a;
-            padding-bottom: 8px;
-        }
-        
-        .button-group {
+        .viewport-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
         
-        button {
-            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
-            color: white;
-            border: none;
-            padding: 12px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
+        .view-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            background-color: #323233;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            cursor: pointer;
         }
         
-        button:hover {
-            background: linear-gradient(135deg, #4895ef 0%, #4361ee 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        .view-button:hover {
+            background-color: #3e3e42;
+            color: #ffffff;
         }
         
-        button:active {
-            transform: translateY(0);
-        }
-        
-        button i {
-            font-size: 16px;
-        }
-        
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        label {
-            font-size: 14px;
-            color: #a0a0c0;
-        }
-        
-        input {
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #4a4a6a;
-            background: rgba(35, 35, 52, 0.8);
-            color: white;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: #4361ee;
-        }
-        
+        /* Status Bar */
         .status-bar {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
+            height: 24px;
+            background-color: #0078d7;
             display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #a0a0c0;
-        }
-        
-        .instructions {
-            background: rgba(25, 25, 42, 0.8);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-        
-        .instructions ul {
-            padding-left: 20px;
-            margin: 10px 0 0 0;
-        }
-        
-        .instructions li {
-            margin-bottom: 8px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        
-        .active {
-            background: linear-gradient(135deg, #f72585 0%, #b5179e 100%) !important;
-        }
-        
-        .shape-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .shape-controls button {
+            align-items: center;
+            padding: 0 16px;
             font-size: 12px;
-            padding: 8px 10px;
+            color: #ffffff;
+            justify-content: space-between;
+        }
+        
+        .coords {
+            display: flex;
+            gap: 20px;
+        }
+        
+        /* Command Line */
+        .command-line {
+            height: 28px;
+            background-color: #323233;
+            border-top: 1px solid #3e3e42;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: #cccccc;
+        }
+        
+        .command-prefix {
+            color: #569cd6;
+            margin-right: 8px;
+        }
+        
+        /* Icons */
+        .icon {
+            font-size: 16px;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><span>3D</span> AutoCAD Sederhana</h1>
-        </header>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">CAD</div>
+            <div class="logo-text">AutoCAD-like Editor</div>
+        </div>
+        <div class="menu-bar">
+            <div class="menu-item">File</div>
+            <div class="menu-item">Edit</div>
+            <div class="menu-item">View</div>
+            <div class="menu-item">Tools</div>
+            <div class="menu-item">Draw</div>
+            <div class="menu-item">Modify</div>
+            <div class="menu-item">Help</div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Left Toolbar -->
+        <div class="toolbar">
+            <button class="tool-button active" title="Line" id="lineTool">📏</button>
+            <button class="tool-button" title="Rectangle" id="rectTool">⬜</button>
+            <button class="tool-button" title="Circle" id="circleTool">🔴</button>
+            <button class="tool-button" title="Polygon" id="polygonTool">🔷</button>
+            <div style="height: 16px;"></div>
+            <button class="tool-button" title="Extrude" id="extrudeTool">🧊</button>
+            <button class="tool-button" title="Revolve" id="revolveTool">🔄</button>
+            <button class="tool-button" title="Move" id="moveTool">✥</button>
+            <button class="tool-button" title="Rotate" id="rotateTool">🔄</button>
+            <div style="height: 16px;"></div>
+            <button class="tool-button" title="Zoom" id="zoomTool">🔍</button>
+            <button class="tool-button" title="Pan" id="panTool">✋</button>
+            <button class="tool-button" title="Orbit" id="orbitTool">🌍</button>
+        </div>
         
-        <div class="main-content">
-            <div class="toolbar">
-                <div class="panel">
-                    <h2>Alat Gambar</h2>
-                    <div class="button-group">
-                        <button id="drawMode">✏️ Mode Gambar</button>
-                        <button id="extrudeMode">🧊 Ekstrusi ke 3D</button>
-                        <button id="resetButton">🗑️ Reset Canvas</button>
-                    </div>
-                </div>
-                
-                <div class="panel">
-                    <h2>Pengaturan Ekstrusi</h2>
-                    <div class="input-group">
-                        <label for="extrudeHeight">Tinggi Ekstrusi:</label>
-                        <input type="range" id="extrudeHeight" min="1" max="20" value="5">
-                        <span id="heightValue">5 unit</span>
-                    </div>
-                    <div class="input-group">
-                        <label for="shapeColor">Warna Bentuk:</label>
-                        <input type="color" id="shapeColor" value="#4361ee">
-                    </div>
-                    <button id="applyExtrude">Terapkan Ekstrusi</button>
-                </div>
-                
-                <div class="panel">
-                    <h2>Kontrol Tampilan</h2>
-                    <div class="shape-controls">
-                        <button id="wireframe">🔲 Wireframe</button>
-                        <button id="solid">🔳 Solid</button>
-                        <button id="rotate">🔄 Rotate</button>
-                        <button id="zoomFit">🔍 Zoom Fit</button>
-                    </div>
-                </div>
-                
-                <div class="instructions panel">
-                    <h2>Cara Menggunakan</h2>
-                    <ul>
-                        <li>Klik <strong>Mode Gambar</strong> untuk mulai menggambar garis</li>
-                        <li>Klik pada canvas untuk menempatkan titik</li>
-                        <li>Klik <strong>Ekstrusi ke 3D</strong> lalu <strong>Terapkan Ekstrusi</strong> untuk membuat bentuk 3D</li>
-                        <li>Gunakan mouse untuk mengubah sudut pandang (drag untuk rotate, scroll untuk zoom)</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="canvas-container">
-                <div id="canvas"></div>
+        <!-- Canvas Area -->
+        <div class="canvas-container">
+            <div id="canvas"></div>
+            <div class="viewport-controls">
+                <button class="view-button" title="Top View" id="topView">↑</button>
+                <button class="view-button" title="Front View" id="frontView">↓</button>
+                <button class="view-button" title="Right View" id="rightView">→</button>
+                <button class="view-button" title="Isometric View" id="isoView">↗</button>
             </div>
         </div>
         
-        <div class="status-bar">
-            <div id="status">Status: Siap menggambar</div>
-            <div id="coord">X: 0, Y: 0, Z: 0</div>
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="panel-tabs">
+                <div class="panel-tab active">Properties</div>
+                <div class="panel-tab">Layers</div>
+                <div class="panel-tab">Materials</div>
+            </div>
+            <div class="panel-content">
+                <div class="property-group">
+                    <div class="property-title">Geometry</div>
+                    <div class="property-item">
+                        <div class="property-label">Length</div>
+                        <input type="text" class="property-input" value="0.00">
+                    </div>
+                    <div class="property-item">
+                        <div class="property-label">Width</div>
+                        <input type="text" class="property-input" value="0.00">
+                    </div>
+                    <div class="property-item">
+                        <div class="property-label">Height</div>
+                        <input type="text" class="property-input" value="0.00">
+                    </div>
+                </div>
+                
+                <div class="property-group">
+                    <div class="property-title">Appearance</div>
+                    <div class="property-item">
+                        <div class="property-label">Color</div>
+                        <input type="color" class="property-input" value="#569cd6" style="height: 24px;">
+                    </div>
+                    <div class="property-item">
+                        <div class="property-label">Wireframe</div>
+                        <input type="checkbox" class="property-input" style="width: 16px; height: 16px;">
+                    </div>
+                    <div class="property-item">
+                        <div class="property-label">Opacity</div>
+                        <input type="range" class="property-input" min="0" max="100" value="100">
+                    </div>
+                </div>
+                
+                <div class="property-group">
+                    <div class="property-title">Extrusion</div>
+                    <div class="property-item">
+                        <div class="property-label">Height</div>
+                        <input type="text" class="property-input" value="5.00" id="extrudeHeight">
+                    </div>
+                    <div class="property-item">
+                        <div class="property-label">Segments</div>
+                        <input type="number" class="property-input" value="1" min="1" max="10">
+                    </div>
+                    <div class="property-item">
+                        <div class="property-label">Bevel</div>
+                        <input type="checkbox" class="property-input" style="width: 16px; height: 16px;">
+                    </div>
+                    <button style="width: 100%; padding: 8px; margin-top: 10px; background: #0078d7; color: white; border: none; border-radius: 3px; cursor: pointer;">Apply Extrusion</button>
+                </div>
+            </div>
         </div>
+    </div>
+    
+    <!-- Command Line -->
+    <div class="command-line">
+        <span class="command-prefix">Command:</span>
+        <span id="commandText">Ready</span>
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="coords">
+            <span>X: 0.00</span>
+            <span>Y: 0.00</span>
+            <span>Z: 0.00</span>
+        </div>
+        <div>Ortho | Snap | Grid | Dyn</div>
     </div>
 
     <script>
@@ -257,24 +399,24 @@
         let points = [];
         let line = null;
         let extrudedShape = null;
-        let drawMode = true;
-        let extrudeMode = false;
+        let activeTool = 'line';
+        let gridHelper, axesHelper;
 
         // Inisialisasi aplikasi
         function init() {
             // Setup scene
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x1a1a2e);
+            scene.background = new THREE.Color(0x1e1e1e);
             
             // Setup camera
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 15;
-            camera.position.y = 10;
+            camera.position.set(25, 25, 25);
             camera.lookAt(0, 0, 0);
             
             // Setup renderer
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(document.getElementById('canvas').offsetWidth, document.getElementById('canvas').offsetHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
             document.getElementById('canvas').appendChild(renderer.domElement);
             
             // Setup controls
@@ -283,20 +425,24 @@
             controls.dampingFactor = 0.05;
             
             // Add grid helper
-            const gridHelper = new THREE.GridHelper(30, 30, 0x39394a, 0x25253a);
+            gridHelper = new THREE.GridHelper(50, 50, 0x3c3c3c, 0x252525);
             scene.add(gridHelper);
             
             // Add axes helper
-            const axesHelper = new THREE.AxesHelper(5);
+            axesHelper = new THREE.AxesHelper(10);
             scene.add(axesHelper);
             
             // Add lights
-            const ambientLight = new THREE.AmbientLight(0x404040);
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.8);
             scene.add(ambientLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(1, 1, 1);
-            scene.add(directionalLight);
+            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.6);
+            directionalLight1.position.set(1, 1, 1);
+            scene.add(directionalLight1);
+            
+            const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+            directionalLight2.position.set(-1, -1, -1);
+            scene.add(directionalLight2);
             
             // Event listeners
             setupEventListeners();
@@ -307,7 +453,7 @@
             // Start animation loop
             animate();
             
-            updateStatus();
+            updateCommandLine("Ready");
         }
         
         // Setup event listeners
@@ -315,40 +461,53 @@
             // Canvas click event
             renderer.domElement.addEventListener('click', onCanvasClick);
             renderer.domElement.addEventListener('mousemove', onCanvasMouseMove);
+            renderer.domElement.addEventListener('dblclick', onCanvasDoubleClick);
             
-            // Button events
-            document.getElementById('drawMode').addEventListener('click', activateDrawMode);
-            document.getElementById('extrudeMode').addEventListener('click', activateExtrudeMode);
-            document.getElementById('resetButton').addEventListener('click', resetCanvas);
-            document.getElementById('applyExtrude').addEventListener('click', applyExtrusion);
-            document.getElementById('extrudeHeight').addEventListener('input', updateExtrudeHeightValue);
-            document.getElementById('wireframe').addEventListener('click', toggleWireframe);
-            document.getElementById('solid').addEventListener('click', toggleSolid);
-            document.getElementById('rotate').addEventListener('click', resetRotation);
-            document.getElementById('zoomFit').addEventListener('click', zoomToFit);
+            // Tool buttons
+            document.getElementById('lineTool').addEventListener('click', () => setActiveTool('line'));
+            document.getElementById('rectTool').addEventListener('click', () => setActiveTool('rect'));
+            document.getElementById('circleTool').addEventListener('click', () => setActiveTool('circle'));
+            document.getElementById('polygonTool').addEventListener('click', () => setActiveTool('polygon'));
+            document.getElementById('extrudeTool').addEventListener('click', () => setActiveTool('extrude'));
+            document.getElementById('revolveTool').addEventListener('click', () => setActiveTool('revolve'));
+            document.getElementById('moveTool').addEventListener('click', () => setActiveTool('move'));
+            document.getElementById('rotateTool').addEventListener('click', () => setActiveTool('rotate'));
+            document.getElementById('zoomTool').addEventListener('click', () => setActiveTool('zoom'));
+            document.getElementById('panTool').addEventListener('click', () => setActiveTool('pan'));
+            document.getElementById('orbitTool').addEventListener('click', () => setActiveTool('orbit'));
+            
+            // View buttons
+            document.getElementById('topView').addEventListener('click', setTopView);
+            document.getElementById('frontView').addEventListener('click', setFrontView);
+            document.getElementById('rightView').addEventListener('click', setRightView);
+            document.getElementById('isoView').addEventListener('click', setIsoView);
         }
         
-        // Aktifkan mode gambar
-        function activateDrawMode() {
-            drawMode = true;
-            extrudeMode = false;
-            document.getElementById('drawMode').classList.add('active');
-            document.getElementById('extrudeMode').classList.remove('active');
-            updateStatus();
-        }
-        
-        // Aktifkan mode ekstrusi
-        function activateExtrudeMode() {
-            drawMode = false;
-            extrudeMode = true;
-            document.getElementById('extrudeMode').classList.add('active');
-            document.getElementById('drawMode').classList.remove('active');
-            updateStatus();
+        // Set active tool
+        function setActiveTool(tool) {
+            activeTool = tool;
+            
+            // Update UI
+            document.querySelectorAll('.tool-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tool + 'Tool').classList.add('active');
+            
+            // Update controls based on tool
+            if (tool === 'orbit') {
+                controls.enabled = true;
+            } else if (tool === 'pan') {
+                controls.enabled = true;
+            } else {
+                controls.enabled = false;
+            }
+            
+            updateCommandLine(`${tool} tool selected`);
         }
         
         // Handle canvas click
         function onCanvasClick(event) {
-            if (drawMode) {
+            if (['line', 'rect', 'circle', 'polygon'].includes(activeTool)) {
                 // Dapatkan posisi mouse dalam koordinat Three.js
                 const mouse = new THREE.Vector2();
                 const rect = renderer.domElement.getBoundingClientRect();
@@ -364,11 +523,27 @@
                 const intersectPoint = new THREE.Vector3();
                 raycaster.ray.intersectPlane(plane, intersectPoint);
                 
+                // Bulatkan ke grid terdekat (snap to grid)
+                intersectPoint.x = Math.round(intersectPoint.x);
+                intersectPoint.y = Math.round(intersectPoint.y);
+                intersectPoint.z = 0;
+                
                 // Tambahkan titik
                 points.push(intersectPoint.clone());
                 
                 // Gambar garis
                 drawLine();
+                
+                updateCommandLine(`Point added at ${intersectPoint.x.toFixed(2)}, ${intersectPoint.y.toFixed(2)}`);
+            }
+        }
+        
+        // Handle canvas double click
+        function onCanvasDoubleClick() {
+            if (['line', 'polygon'].includes(activeTool) && points.length > 0) {
+                // Finish drawing
+                drawing = false;
+                updateCommandLine(`Shape completed with ${points.length} points`);
             }
         }
         
@@ -379,7 +554,14 @@
             const mouseY = event.clientY - rect.top;
             
             // Untuk demo saja, koordinat 3D sebenarnya lebih kompleks
-            document.getElementById('coord').textContent = `X: ${Math.round(mouseX/10)}, Y: ${Math.round((rect.height - mouseY)/10)}, Z: 0`;
+            const x = (mouseX / rect.width) * 50 - 25;
+            const y = -((mouseY / rect.height) * 50 - 25);
+            
+            document.querySelector('.coords').innerHTML = `
+                <span>X: ${x.toFixed(2)}</span>
+                <span>Y: ${y.toFixed(2)}</span>
+                <span>Z: 0.00</span>
+            `;
         }
         
         // Gambar garis dari titik-titik
@@ -395,7 +577,10 @@
             
             // Buat geometri garis
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const material = new THREE.LineBasicMaterial({ color: 0x4361ee, linewidth: 2 });
+            const material = new THREE.LineBasicMaterial({ 
+                color: 0x569cd6, 
+                linewidth: 2 
+            });
             line = new THREE.Line(geometry, material);
             scene.add(line);
         }
@@ -428,9 +613,8 @@
             const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
             
             // Buat material dengan warna yang dipilih
-            const color = document.getElementById('shapeColor').value;
             const material = new THREE.MeshPhongMaterial({ 
-                color: color,
+                color: 0x569cd6,
                 flatShading: true,
                 side: THREE.DoubleSide
             });
@@ -439,76 +623,37 @@
             extrudedShape = new THREE.Mesh(geometry, material);
             scene.add(extrudedShape);
             
-            // Pindah ke mode ekstrusi
-            activateExtrudeMode();
+            updateCommandLine(`Extrusion applied with height ${height}`);
         }
         
-        // Reset canvas
-        function resetCanvas() {
-            // Hapus garis dan bentuk
-            if (line) {
-                scene.remove(line);
-                line.geometry.dispose();
-                line.material.dispose();
-                line = null;
-            }
-            
-            if (extrudedShape) {
-                scene.remove(extrudedShape);
-                extrudedShape.geometry.dispose();
-                extrudedShape.material.dispose();
-                extrudedShape = null;
-            }
-            
-            // Reset titik
-            points = [];
-            
-            // Kembali ke mode gambar
-            activateDrawMode();
-        }
-        
-        // Update nilai tinggi ekstrusi
-        function updateExtrudeHeightValue() {
-            const height = document.getElementById('extrudeHeight').value;
-            document.getElementById('heightValue').textContent = height + " unit";
-        }
-        
-        // Toggle wireframe
-        function toggleWireframe() {
-            if (extrudedShape) {
-                extrudedShape.material.wireframe = true;
-            }
-        }
-        
-        // Toggle solid
-        function toggleSolid() {
-            if (extrudedShape) {
-                extrudedShape.material.wireframe = false;
-            }
-        }
-        
-        // Reset rotasi
-        function resetRotation() {
-            controls.reset();
-        }
-        
-        // Zoom to fit
-        function zoomToFit() {
-            // Untuk demo sederhana, reset kamera
-            camera.position.set(0, 10, 15);
+        // View functions
+        function setTopView() {
+            camera.position.set(0, 50, 0);
             camera.lookAt(0, 0, 0);
-            controls.update();
+            updateCommandLine("Top view activated");
         }
         
-        // Update status
-        function updateStatus() {
-            let status = "Status: ";
-            if (drawMode) {
-                status += "Mode Gambar - Klik pada canvas untuk menambahkan titik";
-            } else if (extrudeMode) {
-                status += "Mode Ekstrusi - Atur pengaturan dan terapkan ekstrusi";
-            }
-            document.getElementById('status').textContent = status;
+        function setFrontView() {
+            camera.position.set(0, 0, 50);
+            camera.lookAt(0, 0, 0);
+            updateCommandLine("Front view activated");
+        }
+        
+        function setRightView() {
+            camera.position.set(50, 0, 0);
+            camera.lookAt(0, 0, 0);
+            updateCommandLine("Right view activated");
+        }
+        
+        function setIsoView() {
+            camera.position.set(25, 25, 25);
+            camera.lookAt(0, 0, 0);
+            updateCommandLine("Isometric view activated");
+        }
+        
+        // Update command line
+        function updateCommandLine(text) {
+            document.getElementById('commandText').textContent = text;
         }
         
         // Handle window resize
