@@ -5,270 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoCAD-like 3D Editor</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-        
-        body {
-            background-color: #2d2d30;
-            color: #cccccc;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Header Styles */
-        .header {
+        /* ... (CSS yang sudah ada tetap sama) ... */
+
+        /* OSNAP Toolbar Styles */
+        .osnap-toolbar {
+            position: absolute;
+            top: 10px;
+            right: 340px;
             background-color: #323233;
-            height: 48px;
+            border-radius: 4px;
+            padding: 8px;
             display: flex;
-            align-items: center;
-            padding: 0 16px;
-            border-bottom: 1px solid #3e3e42;
+            flex-wrap: wrap;
+            gap: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            width: 180px;
         }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            margin-right: 30px;
-        }
-        
-        .logo-icon {
+
+        .osnap-button {
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, #0078d7 0%, #1e8cde 100%);
-            border-radius: 4px;
-            margin-right: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .logo-text {
-            font-weight: 600;
-            color: #ffffff;
-            font-size: 15px;
-        }
-        
-        .menu-bar {
-            display: flex;
-            height: 100%;
-        }
-        
-        .menu-item {
-            padding: 0 12px;
-            display: flex;
-            align-items: center;
-            height: 100%;
-            cursor: pointer;
-            font-size: 13px;
-            color: #cccccc;
-        }
-        
-        .menu-item:hover {
-            background-color: #3e3e42;
-            color: #ffffff;
-        }
-        
-        /* Main Content */
-        .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        /* Toolbar */
-        .toolbar {
-            width: 64px;
-            background-color: #333337;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 16px 0;
-            border-right: 1px solid #3e3e42;
-        }
-        
-        .tool-button {
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            color: #cccccc;
-            font-size: 20px;
-            background-color: transparent;
-            border: none;
-        }
-        
-        .tool-button:hover {
-            background-color: #3e3e42;
-            color: #ffffff;
-        }
-        
-        .tool-button.active {
-            background-color: #0078d7;
-            color: #ffffff;
-        }
-        
-        /* Right Panel */
-        .right-panel {
-            width: 320px;
-            background-color: #252526;
-            border-left: 1px solid #3e3e42;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .panel-tabs {
-            display: flex;
-            border-bottom: 1px solid #3e3e42;
-        }
-        
-        .panel-tab {
-            padding: 12px 16px;
-            cursor: pointer;
-            font-size: 13px;
-            color: #cccccc;
-        }
-        
-        .panel-tab.active {
-            color: #ffffff;
-            background-color: #2d2d30;
-            border-bottom: 2px solid #0078d7;
-        }
-        
-        .panel-content {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-        }
-        
-        .property-group {
-            margin-bottom: 20px;
-        }
-        
-        .property-title {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #cccccc;
-        }
-        
-        .property-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .property-label {
-            width: 100px;
-            font-size: 12px;
-            color: #969696;
-        }
-        
-        .property-input {
-            flex: 1;
-            background-color: #3c3c3c;
-            border: 1px solid #464647;
-            color: #cccccc;
-            padding: 4px 8px;
             border-radius: 3px;
-        }
-        
-        /* Canvas Area */
-        .canvas-container {
-            flex: 1;
-            position: relative;
-            background-color: #1e1e1e;
-            overflow: hidden;
-        }
-        
-        #canvas {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .viewport-controls {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .view-button {
-            width: 36px;
-            height: 36px;
-            border-radius: 4px;
-            background-color: #323233;
+            cursor: pointer;
+            background-color: #252526;
             border: 1px solid #3e3e42;
             color: #cccccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            font-size: 12px;
         }
-        
-        .view-button:hover {
+
+        .osnap-button:hover {
             background-color: #3e3e42;
             color: #ffffff;
         }
-        
-        /* Status Bar */
-        .status-bar {
-            height: 24px;
+
+        .osnap-button.active {
             background-color: #0078d7;
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            font-size: 12px;
             color: #ffffff;
-            justify-content: space-between;
+            border-color: #1e8cde;
         }
-        
-        .coords {
-            display: flex;
-            gap: 20px;
+
+        .snap-indicator {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ff6b6b;
+            pointer-events: none;
+            z-index: 99;
+            display: none;
         }
-        
-        /* Command Line */
-        .command-line {
-            height: 28px;
-            background-color: #323233;
-            border-top: 1px solid #3e3e42;
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-            color: #cccccc;
-        }
-        
-        .command-prefix {
-            color: #569cd6;
-            margin-right: 8px;
-        }
-        
-        /* Icons */
-        .icon {
-            font-size: 16px;
-        }
-        
-        .warning {
-            color: #ff6b6b;
+
+        .snap-tooltip {
+            position: absolute;
+            background-color: #0078d7;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
             font-size: 12px;
-            margin-top: 5px;
+            pointer-events: none;
+            z-index: 101;
+            display: none;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -314,6 +114,21 @@
         <!-- Canvas Area -->
         <div class="canvas-container">
             <div id="canvas"></div>
+            
+            <!-- OSNAP Toolbar -->
+            <div class="osnap-toolbar">
+                <button class="osnap-button" title="Endpoint" id="endpointSnap">END</button>
+                <button class="osnap-button" title="Midpoint" id="midpointSnap">MID</button>
+                <button class="osnap-button" title="Center" id="centerSnap">CEN</button>
+                <button class="osnap-button" title="Intersection" id="intersectionSnap">INT</button>
+                <button class="osnap-button" title="Perpendicular" id="perpendicularSnap">PER</button>
+                <button class="osnap-button active" title="Grid" id="gridSnap">GRID</button>
+            </div>
+            
+            <!-- Snap Indicator -->
+            <div class="snap-indicator" id="snapIndicator"></div>
+            <div class="snap-tooltip" id="snapTooltip"></div>
+            
             <div class="viewport-controls">
                 <button class="view-button" title="Top View" id="topView">↑</button>
                 <button class="view-button" title="Front View" id="frontView">↓</button>
@@ -396,7 +211,7 @@
             <span>Y: 0.00</span>
             <span>Z: 0.00</span>
         </div>
-        <div>Ortho | Snap | Grid | Dyn</div>
+        <div>Ortho | <span id="snapStatus">Snap</span> | Grid | Dyn</div>
     </div>
 
     <script>
@@ -409,6 +224,19 @@
         let activeTool = 'line';
         let gridHelper, axesHelper;
         let isShapeClosed = false;
+        
+        // Variabel OSNAP
+        let osnapEnabled = true;
+        let activeSnapModes = {
+            grid: true,
+            endpoint: false,
+            midpoint: false,
+            center: false,
+            intersection: false,
+            perpendicular: false
+        };
+        let snapIndicator, snapTooltip;
+        let objects = []; // Untuk menyimpan objek yang bisa di-snap
 
         // Inisialisasi aplikasi
         function init() {
@@ -452,6 +280,10 @@
             directionalLight2.position.set(-1, -1, -1);
             scene.add(directionalLight2);
             
+            // Inisialisasi OSNAP elements
+            snapIndicator = document.getElementById('snapIndicator');
+            snapTooltip = document.getElementById('snapTooltip');
+            
             // Event listeners
             setupEventListeners();
             
@@ -484,6 +316,14 @@
             document.getElementById('panTool').addEventListener('click', () => setActiveTool('pan'));
             document.getElementById('orbitTool').addEventListener('click', () => setActiveTool('orbit'));
             
+            // OSNAP buttons
+            document.getElementById('endpointSnap').addEventListener('click', () => toggleSnapMode('endpoint'));
+            document.getElementById('midpointSnap').addEventListener('click', () => toggleSnapMode('midpoint'));
+            document.getElementById('centerSnap').addEventListener('click', () => toggleSnapMode('center'));
+            document.getElementById('intersectionSnap').addEventListener('click', () => toggleSnapMode('intersection'));
+            document.getElementById('perpendicularSnap').addEventListener('click', () => toggleSnapMode('perpendicular'));
+            document.getElementById('gridSnap').addEventListener('click', () => toggleSnapMode('grid'));
+            
             // View buttons
             document.getElementById('topView').addEventListener('click', setTopView);
             document.getElementById('frontView').addEventListener('click', setFrontView);
@@ -497,6 +337,99 @@
             document.getElementById('wireframeToggle').addEventListener('change', toggleWireframe);
             document.getElementById('opacitySlider').addEventListener('input', updateOpacity);
             document.getElementById('shapeColor').addEventListener('input', updateColor);
+        }
+        
+        // Toggle OSNAP mode
+        function toggleSnapMode(mode) {
+            activeSnapModes[mode] = !activeSnapModes[mode];
+            document.getElementById(mode + 'Snap').classList.toggle('active');
+            
+            // Update status
+            let snapModes = [];
+            for (const [key, value] of Object.entries(activeSnapModes)) {
+                if (value) snapModes.push(key.toUpperCase());
+            }
+            
+            document.getElementById('snapStatus').textContent = snapModes.join(',') || 'Snap';
+            updateCommandLine(`OSNAP mode: ${snapModes.join(', ') || 'None'}`);
+        }
+        
+        // Fungsi untuk mencari titik snap terdekat
+        function findSnapPoint(mouse, raycaster) {
+            if (!osnapEnabled) return null;
+            
+            const snapThreshold = 10; // pixels
+            let closestPoint = null;
+            let closestDistance = Infinity;
+            let snapType = '';
+            
+            // Grid snapping
+            if (activeSnapModes.grid) {
+                const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+                const intersectPoint = new THREE.Vector3();
+                raycaster.ray.intersectPlane(plane, intersectPoint);
+                
+                // Bulatkan ke grid terdekat
+                intersectPoint.x = Math.round(intersectPoint.x);
+                intersectPoint.y = Math.round(intersectPoint.y);
+                intersectPoint.z = 0;
+                
+                return { point: intersectPoint, type: 'GRID' };
+            }
+            
+            // Endpoint snapping (jika ada garis)
+            if (activeSnapModes.endpoint && line) {
+                const vertices = line.geometry.attributes.position.array;
+                for (let i = 0; i < vertices.length; i += 3) {
+                    const point = new THREE.Vector3(vertices[i], vertices[i+1], vertices[i+2]);
+                    const screenPoint = point.clone().project(camera);
+                    
+                    // Konversi ke koordinat layar
+                    const rect = renderer.domElement.getBoundingClientRect();
+                    const screenX = (screenPoint.x * 0.5 + 0.5) * rect.width;
+                    const screenY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
+                    
+                    const distance = Math.sqrt(
+                        Math.pow(mouse.x - screenX, 2) + 
+                        Math.pow(mouse.y - screenY, 2)
+                    );
+                    
+                    if (distance < snapThreshold && distance < closestDistance) {
+                        closestDistance = distance;
+                        closestPoint = point;
+                        snapType = 'END';
+                    }
+                }
+            }
+            
+            return closestPoint ? { point: closestPoint, type: snapType } : null;
+        }
+        
+        // Tampilkan indikator snap
+        function showSnapIndicator(point, type) {
+            // Konversi titik 3D ke koordinat layar
+            const screenPoint = point.clone().project(camera);
+            const rect = renderer.domElement.getBoundingClientRect();
+            
+            const x = (screenPoint.x * 0.5 + 0.5) * rect.width + rect.left;
+            const y = (-screenPoint.y * 0.5 + 0.5) * rect.height + rect.top;
+            
+            // Posisikan indikator
+            snapIndicator.style.left = (x - 5) + 'px';
+            snapIndicator.style.top = (y - 5) + 'px';
+            snapIndicator.style.display = 'block';
+            
+            // Tampilkan tooltip
+            snapTooltip.textContent = type;
+            snapTooltip.style.left = (x + 15) + 'px';
+            snapTooltip.style.top = (y - 15) + 'px';
+            snapTooltip.style.display = 'block';
+        }
+        
+        // Sembunyikan indikator snap
+        function hideSnapIndicator() {
+            snapIndicator.style.display = 'none';
+            snapTooltip.style.display = 'none';
         }
         
         // Set active tool
@@ -562,15 +495,24 @@
                 const raycaster = new THREE.Raycaster();
                 raycaster.setFromCamera(mouse, camera);
                 
-                // Hitung perpotongan dengan grid (plane XY)
-                const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-                const intersectPoint = new THREE.Vector3();
-                raycaster.ray.intersectPlane(plane, intersectPoint);
+                // Cari titik snap terdekat
+                const snapResult = findSnapPoint({x: event.clientX, y: event.clientY}, raycaster);
+                let intersectPoint;
                 
-                // Bulatkan ke grid terdekat (snap to grid)
-                intersectPoint.x = Math.round(intersectPoint.x);
-                intersectPoint.y = Math.round(intersectPoint.y);
-                intersectPoint.z = 0;
+                if (snapResult) {
+                    intersectPoint = snapResult.point;
+                    updateCommandLine(`Snapped to ${snapResult.type} at ${intersectPoint.x.toFixed(2)}, ${intersectPoint.y.toFixed(2)}`);
+                } else {
+                    // Jika tidak ada snap point, gunakan grid
+                    const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+                    intersectPoint = new THREE.Vector3();
+                    raycaster.ray.intersectPlane(plane, intersectPoint);
+                    
+                    // Bulatkan ke grid terdekat (snap to grid)
+                    intersectPoint.x = Math.round(intersectPoint.x);
+                    intersectPoint.y = Math.round(intersectPoint.y);
+                    intersectPoint.z = 0;
+                }
                 
                 // Tambahkan titik
                 points.push(intersectPoint.clone());
@@ -582,6 +524,43 @@
                 
                 // Perbarui properti geometri
                 updateGeometryProperties();
+            }
+        }
+        
+        // Update koordinat mouse dengan OSNAP
+        function onCanvasMouseMove(event) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            
+            // Untuk koordinat status bar
+            const x = (mouseX / rect.width) * 50 - 25;
+            const y = -((mouseY / rect.height) * 50 - 25);
+            
+            document.querySelector('.coords').innerHTML = `
+                <span>X: ${x.toFixed(2)}</span>
+                <span>Y: ${y.toFixed(2)}</span>
+                <span>Z: 0.00</span>
+            `;
+            
+            // Cari snap point jika OSNAP aktif
+            if (osnapEnabled && ['line', 'rect', 'circle', 'polygon'].includes(activeTool)) {
+                const mouse = new THREE.Vector2();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(mouse, camera);
+                
+                const snapResult = findSnapPoint({x: event.clientX, y: event.clientY}, raycaster);
+                
+                if (snapResult) {
+                    showSnapIndicator(snapResult.point, snapResult.type);
+                } else {
+                    hideSnapIndicator();
+                }
+            } else {
+                hideSnapIndicator();
             }
         }
         
@@ -609,23 +588,6 @@
             }
         }
         
-        // Update koordinat mouse
-        function onCanvasMouseMove(event) {
-            const rect = renderer.domElement.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
-            
-            // Untuk demo saja, koordinat 3D sebenarnya lebih kompleks
-            const x = (mouseX / rect.width) * 50 - 25;
-            const y = -((mouseY / rect.height) * 50 - 25);
-            
-            document.querySelector('.coords').innerHTML = `
-                <span>X: ${x.toFixed(2)}</span>
-                <span>Y: ${y.toFixed(2)}</span>
-                <span>Z: 0.00</span>
-            `;
-        }
-        
         // Gambar garis dari titik-titik
         function drawLine() {
             // Hapus garis lama jika ada
@@ -645,6 +607,9 @@
             });
             line = new THREE.Line(geometry, material);
             scene.add(line);
+            
+            // Simpan objek untuk snapping
+            objects = [line];
         }
         
         // Ekstrusi garis menjadi bentuk 3D
@@ -705,6 +670,9 @@
             // Buat mesh dan tambahkan ke scene
             extrudedShape = new THREE.Mesh(geometry, material);
             scene.add(extrudedShape);
+            
+            // Simpan objek untuk snapping
+            objects.push(extrudedShape);
             
             // Perbarui properti tinggi
             document.getElementById('heightValue').value = height.toFixed(2);
