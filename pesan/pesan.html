@@ -7,6 +7,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
@@ -22,8 +23,36 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
-      /* biarkan scroll jika perlu */
       overflow-y: auto;
+    }
+
+    /* Navbar Styles */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 414px;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+      background: white;
+      z-index: 10;
+    }
+    
+    .nav-icon {
+      transition: all 0.3s ease;
+    }
+    
+    .nav-icon.active {
+      transform: translateY(-10px);
+      color: #38b2ac;
+    }
+
+    .app-container {
+      max-width: 414px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
 
     #topBar {
@@ -82,7 +111,8 @@
       background: #e6f0fb;
       display: flex;
       flex-direction: column;
-      min-height: 0; /* penting untuk flex container agar scroll berfungsi */
+      min-height: 0;
+      padding-bottom: 80px; /* Space for navbar */
     }
 
     .message {
@@ -93,7 +123,7 @@
       font-size: 14px;
       line-height: 1.5;
       word-wrap: break-word;
-      white-space: pre-wrap; /* supaya enter tetap terlihat */
+      white-space: pre-wrap;
     }
 
     .mine {
@@ -115,7 +145,7 @@
       background: #ffffff;
       border-top: 1px solid #ccc;
       position: sticky;
-      bottom: 0;
+      bottom: 60px; /* Above navbar */
       z-index: 10;
       flex-shrink: 0;
     }
@@ -153,6 +183,31 @@
       background: #1565c0;
     }
 
+    .message {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 8px;
+      max-width: 80%;
+      position: relative;
+    }
+
+    .mine {
+      background-color: #dcf8c6;
+      align-self: flex-end;
+    }
+
+    .theirs {
+      background-color: #f1f0f0;
+      align-self: flex-start;
+    }
+
+    .delete-icon {
+      color: blue;
+      font-size: 14px;
+      position: relative;
+      top: 2px;
+    }
+
     @media (max-width: 480px) {
       #topBar {
         font-size: 16px;
@@ -161,52 +216,56 @@
       #messageInput {
         font-size: 13px;
       }
-	  tyle>
-  .message {
-    padding: 10px;
-    margin: 5px;
-    border-radius: 8px;
-    max-width: 80%;
-    position: relative;
-  }
-
-  .mine {
-    background-color: #dcf8c6;
-    align-self: flex-end;
-  }
-
-  .theirs {
-    background-color: #f1f0f0;
-    align-self: flex-start;
-  }
-
-  .delete-icon {
-    color: blue;
-    font-size: 14px;
-    position: relative;
-    top: 2px;
-  }
-
-	  
     }
   </style>
 </head>
 <body>
 
-  <div id="topBar"><i class="fas fa-comments"></i> Teta Chat</div>
+  <!-- App Container -->
+  <div class="app-container">
+    <!-- Top Bar -->
+    <div id="topBar"><i class="fas fa-comments"></i> Teta Chat</div>
 
-  <div id="searchContainer">
-    <input type="text" id="searchInput" placeholder="Cari pengguna..." oninput="filterUsers()" />
-    <div id="searchResults"></div>
-  </div>
+    <!-- Search Container -->
+    <div id="searchContainer">
+      <input type="text" id="searchInput" placeholder="Cari pengguna..." oninput="filterUsers()" />
+      <div id="searchResults"></div>
+    </div>
 
-  <div id="chatBox"></div>
+    <!-- Chat Box -->
+    <div id="chatBox"></div>
 
-  <div id="inputArea">
-    <input type="text" id="messageInput" placeholder="Ketik pesan..." />
-    <button id="sendBtn" onclick="sendMessage()">
-      <i class="fas fa-paper-plane"></i>
-    </button>
+    <!-- Input Area -->
+    <div id="inputArea">
+      <input type="text" id="messageInput" placeholder="Ketik pesan..." />
+      <button id="sendBtn" onclick="sendMessage()">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav bg-white p-2 flex justify-around items-center">
+      <a href="dashboad siswa.html" class="flex flex-col items-center text-gray-500">
+        <i class="fas fa-home nav-icon text-xl"></i>
+        <span class="text-xs mt-1">Beranda</span>
+      </a>
+      <a href="soal harian/dashboard soal.html" class="flex flex-col items-center text-gray-500">
+        <i class="fas fa-flask nav-icon text-xl"></i>
+        <span class="text-xs mt-1">Soal Harian</span>
+      </a>
+      <a href="ai/index.html" class="flex flex-col items-center text-gray-500">
+        <i class="fas fa-robot nav-icon text-xl active"></i>
+        <span class="text-xs mt-1">Nayra AI</span>
+      </a>
+      <a href="kategori/kategori materi.html" class="flex flex-col items-center text-gray-500">
+        <i class="fas fa-chalkboard-teacher nav-icon text-xl"></i>
+        <span class="text-xs mt-1">Materi Harian</span>
+      </a>
+      <a href="profil.html" class="flex flex-col items-center text-gray-500">
+        <i class="fas fa-user nav-icon text-xl"></i>
+        <span class="text-xs mt-1">Profil</span>
+      </a>
+    </nav>
   </div>
 
   <script>
@@ -284,54 +343,68 @@
     }
 
     function loadChat() {
-  const chatId = [currentUser.uid, receiverId].sort().join('_');
-  if (unsubscribe) unsubscribe();
+      const chatId = [currentUser.uid, receiverId].sort().join('_');
+      if (unsubscribe) unsubscribe();
 
-  unsubscribe = db.collection('chats').doc(chatId)
-    .collection('messages')
-    .orderBy('timestamp')
-    .onSnapshot(snapshot => {
-      const chatBox = document.getElementById('chatBox');
-      chatBox.innerHTML = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const msg = document.createElement('div');
-        msg.className = 'message ' + (data.senderId === currentUser.uid ? 'mine' : 'theirs');
-        msg.textContent = data.text;
-        msg.setAttribute('data-id', doc.id); // penting: simpan ID dokumen
+      unsubscribe = db.collection('chats').doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp')
+        .onSnapshot(snapshot => {
+          const chatBox = document.getElementById('chatBox');
+          chatBox.innerHTML = '';
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const msg = document.createElement('div');
+            msg.className = 'message ' + (data.senderId === currentUser.uid ? 'mine' : 'theirs');
+            msg.textContent = data.text;
+            msg.setAttribute('data-id', doc.id);
 
-        // Buat tombol hapus (ikon sampah)
-        const deleteIcon = document.createElement('i');
-        deleteIcon.className = 'fas fa-trash delete-icon';
-        deleteIcon.style.display = 'none'; // awalnya tersembunyi
-        deleteIcon.style.marginLeft = '10px';
-        deleteIcon.style.cursor = 'pointer';
+            const deleteIcon = document.createElement('i');
+            deleteIcon.className = 'fas fa-trash delete-icon';
+            deleteIcon.style.display = 'none';
+            deleteIcon.style.marginLeft = '10px';
+            deleteIcon.style.cursor = 'pointer';
 
-        // Saat ikon diklik, hapus pesan
-        deleteIcon.addEventListener('click', (e) => {
-          e.stopPropagation(); // cegah pemicu klik parent
-          const messageId = msg.getAttribute('data-id');
-          db.collection('chats').doc(chatId)
-            .collection('messages').doc(messageId)
-            .delete();
+            deleteIcon.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const messageId = msg.getAttribute('data-id');
+              db.collection('chats').doc(chatId)
+                .collection('messages').doc(messageId)
+                .delete();
+            });
+
+            msg.appendChild(deleteIcon);
+
+            msg.addEventListener('click', () => {
+              const alreadyVisible = deleteIcon.style.display === 'inline';
+              document.querySelectorAll('.delete-icon').forEach(icon => icon.style.display = 'none');
+              deleteIcon.style.display = alreadyVisible ? 'none' : 'inline';
+            });
+
+            chatBox.appendChild(msg);
+          });
+          chatBox.scrollTop = chatBox.scrollHeight;
         });
+    }
 
-        // Tambahkan ikon ke pesan
-        msg.appendChild(deleteIcon);
-
-        // Saat pesan diklik, tampilkan ikon hapus
-        msg.addEventListener('click', () => {
-          const alreadyVisible = deleteIcon.style.display === 'inline';
-          // Sembunyikan ikon di semua pesan lain
-          document.querySelectorAll('.delete-icon').forEach(icon => icon.style.display = 'none');
-          deleteIcon.style.display = alreadyVisible ? 'none' : 'inline';
+    // Navbar interaction
+    document.addEventListener('DOMContentLoaded', function() {
+      const navItems = document.querySelectorAll('.nav-icon');
+      
+      navItems.forEach(item => {
+        item.addEventListener('click', function() {
+          navItems.forEach(nav => {
+            nav.classList.remove('active');
+            nav.parentElement.classList.remove('text-primary');
+            nav.parentElement.classList.add('text-gray-500');
+          });
+          
+          this.classList.add('active');
+          this.parentElement.classList.add('text-primary');
+          this.parentElement.classList.remove('text-gray-500');
         });
-
-        chatBox.appendChild(msg);
       });
-      chatBox.scrollTop = chatBox.scrollHeight;
     });
-}
 
   </script>
 </body>
